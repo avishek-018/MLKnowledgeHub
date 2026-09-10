@@ -50,3 +50,77 @@ Document Ingestion
                             |
                             v
                         MCP Server
+```
+
+
+## Tech Stack
+
+Planned technologies include:
+
+- Python
+- PyMuPDF
+- Pydantic
+- sentence-transformers
+- Qdrant
+- Neo4j
+- FastAPI
+- MCP Python SDK
+- OpenAI API
+- Streamlit
+- Docker
+- pytest
+- Project Structure
+
+## Project Structure
+```
+MLKnowledgeHub/
+├── data/
+├── docs/
+├── notebooks/
+├── scripts/
+├── src/
+│   └── ml_knowledge_hub/
+│       ├── ingestion/
+│       └── knowledge_graph/
+├── tests/
+├── README.md
+└── pyproject.toml
+```
+
+## Setup
+
+Create and activate a virtual environment:
+
+```
+python -m venv .venv
+source .venv/bin/activate
+```
+
+Install the project:
+
+```
+pip install -e .
+```
+
+Run tests:
+
+```
+pytest
+```
+
+## Roadmap
+
+- [&checkmark;] PDF ingestion
+- [&checkmark;] Text chunking
+- Embedding generation
+- Vector search with Qdrant
+- Basic RAG pipeline
+- Knowledge graph construction
+- Hybrid GraphRAG
+- MCP server
+- Evaluation
+- Public demo
+
+## License
+
+This project is currently under development.
