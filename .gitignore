@@ -4,9 +4,11 @@ __pycache__/
 .pytest_cache/
 .venv/
 venv/
+.DS_Store
 
 # Environment
 .env
+.env.example
 
 # Data outputs
 data/raw/*
