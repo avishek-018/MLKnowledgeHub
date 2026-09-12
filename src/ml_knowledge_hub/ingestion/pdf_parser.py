@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-import fitz
+import pymupdf
 
 
 def extract_text_from_pdf(pdf_path: str | Path) -> str:
@@ -29,7 +29,7 @@ def extract_text_from_pdf(pdf_path: str | Path) -> str:
 
     text_parts = []
 
-    with fitz.open(pdf_path) as document:
+    with pymupdf.open(pdf_path) as document:
         for page in document:
             text = page.get_text("text")
             if text:

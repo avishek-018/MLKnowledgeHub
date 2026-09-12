@@ -47,7 +47,7 @@ rag = RAGPipeline(
     generator=generator,
 )
 
-question = "What dataset is used in this paper?"
+question = "What is the accuracy?"
 
 result = rag.ask(
     question=question,

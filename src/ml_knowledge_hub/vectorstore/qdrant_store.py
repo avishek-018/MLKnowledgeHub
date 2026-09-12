@@ -2,6 +2,7 @@
 
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
+from qdrant_client.models import Filter, FieldCondition, MatchValue, MatchAny
 
 
 class QdrantStore:
@@ -40,9 +41,14 @@ class QdrantStore:
                     payload={
                         "chunk_id": chunk.chunk_id,
                         "document_id": chunk.document_id,
+                        "project_id": chunk.project_id,
+                        "asset_type": chunk.asset_type,
+                        "title": chunk.title,
                         "text": chunk.text,
                         "start_char": chunk.start_char,
                         "end_char": chunk.end_char,
+                        "source_url": chunk.source_url,
+                        "license": chunk.license,
                     },
                 )
             )
@@ -52,14 +58,59 @@ class QdrantStore:
             points=points,
         )
 
+    # def search(
+    #     self,
+    #     query_embedding,
+    #     limit: int = 5,
+    # ):
+    #     results = self.client.query_points(
+    #         collection_name=self.collection_name,
+    #         query=query_embedding,
+    #         limit=limit,
+    #     )
+
+    #     return results.points
+
+
+
+
     def search(
         self,
         query_embedding,
         limit: int = 5,
+        asset_types: list[str] | None = None,
+        project_id: str | None = None,
     ):
+        must_conditions = []
+
+        # Optional asset-type filter
+        if asset_types:
+            must_conditions.append(
+                FieldCondition(
+                    key="asset_type",
+                    match=MatchAny(any=asset_types),
+                )
+            )
+
+        # Optional project filter
+        if project_id is not None:
+            must_conditions.append(
+                FieldCondition(
+                    key="project_id",
+                    match=MatchValue(value=project_id),
+                )
+            )
+
+        query_filter = (
+            Filter(must=must_conditions)
+            if must_conditions
+            else None
+        )
+
         results = self.client.query_points(
             collection_name=self.collection_name,
             query=query_embedding,
+            query_filter=query_filter,
             limit=limit,
         )
 
