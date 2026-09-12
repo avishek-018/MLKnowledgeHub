@@ -13,6 +13,7 @@ venv/
 # Data outputs
 data/raw/*
 data/processed/*
+data/qdrant/
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 

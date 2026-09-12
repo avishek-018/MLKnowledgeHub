@@ -3,26 +3,44 @@
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
 from qdrant_client.models import Filter, FieldCondition, MatchValue, MatchAny
-
+from pathlib import Path
 
 class QdrantStore:
     def __init__(
         self,
         collection_name: str = "ml_assets",
         vector_size: int = 384,
+        storage_path: str | Path = "data/qdrant",
     ):
         self.collection_name = collection_name
 
-        # Local in-memory Qdrant for development/testing
-        self.client = QdrantClient(":memory:")
+        storage_path = Path(storage_path)
+        storage_path.mkdir(parents=True, exist_ok=True)
 
-        self.client.create_collection(
-            collection_name=self.collection_name,
-            vectors_config=VectorParams(
-                size=vector_size,
-                distance=Distance.COSINE,
-            ),
+        self.client = QdrantClient(
+            path=str(storage_path)
         )
+
+        existing_collections = {
+            collection.name
+            for collection in self.client.get_collections().collections
+        }
+
+        if self.collection_name not in existing_collections:
+            self.client.create_collection(
+                collection_name=self.collection_name,
+                vectors_config=VectorParams(
+                    size=vector_size,
+                    distance=Distance.COSINE,
+                ),
+            )
+    def count_points(self) -> int:
+        result = self.client.count(
+            collection_name=self.collection_name,
+            exact=True,
+        )
+
+        return result.count
 
     def add_chunks(
         self,
