@@ -114,8 +114,6 @@ class KnowledgeAssistant:
     ) -> dict:
         query_embedding = self.embedder.encode([query])[0]
 
-        # Retrieve extra results because duplicate chunks/documents
-        # may be removed before returning the final results.
         results = self.vector_store.search(
             query_embedding=query_embedding,
             limit=15,
@@ -124,22 +122,44 @@ class KnowledgeAssistant:
 
         query_lower = query.lower()
 
-        # Project-oriented questions should show
-        # one best result per project.
         if "project" in query_lower:
             results = self._deduplicate_by_project(results)
-
-        # Otherwise show one best result per document.
         else:
             results = self._deduplicate_by_document(results)
 
         results = results[:limit]
 
+        if self.rag_generator is not None:
+            answer = self.rag_generator.generate(
+                question=query,
+                retrieved_results=results,
+            )
+        else:
+            answer = None
+
+        sources = [
+            {
+                "source_id": f"S{index}",
+                "title": result.payload.get("title"),
+                "project_id": result.payload.get("project_id"),
+                "asset_type": result.payload.get("asset_type"),
+                "document_id": result.payload.get("document_id"),
+                "score": result.score,
+                "source_url": result.payload.get("source_url"),
+            }
+            for index, result in enumerate(
+                results,
+                start=1,
+            )
+        ]
+
         return {
             "type": "semantic",
             "query": query,
+            "answer": answer,
             "filter": {
                 "asset_types": asset_types,
             },
+            "sources": sources,
             "results": results,
         }

@@ -9,7 +9,12 @@ from ml_knowledge_hub.ingestion.chunker import chunk_document
 from ml_knowledge_hub.ingestion.corpus_loader import load_corpus
 from ml_knowledge_hub.metadata.service import MetadataService
 from ml_knowledge_hub.vectorstore.qdrant_store import QdrantStore
+from dotenv import load_dotenv
 
+from ml_knowledge_hub.rag.generator import RAGGenerator
+
+load_dotenv()
+rag_generator = RAGGenerator()
 
 def main():
     manifest_path = Path("data/raw/manifest.json")
@@ -55,6 +60,7 @@ def main():
         metadata_service=metadata_service,
         vector_store=store,
         embedder=embedder,
+        rag_generator=rag_generator,
     )
 
     # 7. Test questions
@@ -85,29 +91,18 @@ def main():
             print("\nFILTER:")
             print(result["filter"])
 
-            print("\nTOP RESULTS:")
+            print("\nANSWER:")
+            print(result["answer"])
 
-            for rank, item in enumerate(
-                result["results"],
-                start=1,
-            ):
-                print(
-                    f"\n{rank}. "
-                    f"{item.payload['title']} "
-                    f"[{item.payload['asset_type']}]"
-                )
+            print("\nSOURCES:")
 
+            for source in result["sources"]:
                 print(
-                    f"Project: "
-                    f"{item.payload['project_id']}"
-                )
-
-                print(
-                    f"Score: {item.score:.4f}"
-                )
-
-                print(
-                    item.payload["text"][:500]
+                    f"{source['source_id']} | "
+                    f"{source['title']} | "
+                    f"{source['project_id']} | "
+                    f"{source['asset_type']} | "
+                    f"score={source['score']:.4f}"
                 )
 
 
