@@ -1,30 +1,34 @@
 """Metadata service utilities."""
 
+
 class MetadataService:
-    def __init__(self, documents):
-        self.documents = documents
+    def __init__(self, registry):
+        self.registry = registry
 
     def list_projects(self) -> list[str]:
-        return sorted({
-            doc.project_id
-            for doc in self.documents
-        })
+        return self.registry.list_projects()
 
     def count_projects(self) -> int:
-        return len(self.list_projects())
+        return self.registry.count_projects()
 
     def list_asset_types(self) -> list[str]:
         return sorted({
-            doc.asset_type
-            for doc in self.documents
+            record["asset_type"]
+            for record in self.registry.list_assets()
+            if record.get("asset_type")
         })
 
     def count_assets_by_type(self) -> dict[str, int]:
         counts = {}
 
-        for doc in self.documents:
-            counts[doc.asset_type] = (
-                counts.get(doc.asset_type, 0) + 1
+        for record in self.registry.list_assets():
+            asset_type = record.get("asset_type")
+
+            if not asset_type:
+                continue
+
+            counts[asset_type] = (
+                counts.get(asset_type, 0) + 1
             )
 
         return counts
@@ -33,18 +37,14 @@ class MetadataService:
         self,
         project_id: str,
     ):
-        return [
-            doc
-            for doc in self.documents
-            if doc.project_id == project_id
-        ]
+        return self.registry.get_assets_for_project(
+            project_id
+        )
 
     def get_assets_by_type(
         self,
         asset_type: str,
     ):
-        return [
-            doc
-            for doc in self.documents
-            if doc.asset_type == asset_type
-        ]
+        return self.registry.get_assets_by_type(
+            asset_type
+        )

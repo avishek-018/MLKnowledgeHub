@@ -4,6 +4,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
 from qdrant_client.models import Filter, FieldCondition, MatchValue, MatchAny
 from pathlib import Path
+import uuid
 
 class QdrantStore:
     def __init__(
@@ -49,12 +50,20 @@ class QdrantStore:
     ):
         points = []
 
-        for idx, (chunk, embedding) in enumerate(
-            zip(chunks, embeddings)
+        for chunk, embedding in zip(
+            chunks,
+            embeddings,
         ):
+            point_id = str(
+                uuid.uuid5(
+                    uuid.NAMESPACE_URL,
+                    chunk.chunk_id,
+                )
+            )
+
             points.append(
                 PointStruct(
-                    id=idx,
+                    id=point_id,
                     vector=embedding,
                     payload={
                         "chunk_id": chunk.chunk_id,

@@ -8,7 +8,7 @@ from ml_knowledge_hub.ingestion.corpus_loader import load_corpus
 from ml_knowledge_hub.metadata.service import MetadataService
 from ml_knowledge_hub.rag.generator import RAGGenerator
 from ml_knowledge_hub.vectorstore.qdrant_store import QdrantStore
-
+from ml_knowledge_hub.registry.service import AssetRegistry
 
 def main():
     load_dotenv()
@@ -16,16 +16,24 @@ def main():
     manifest_path = Path("data/raw/manifest.json")
     corpus_root = Path("data/raw/corpus")
 
-    # 1. Load documents only for structured metadata queries
-    documents = load_corpus(
-        manifest_path=manifest_path,
-        corpus_root=corpus_root,
-    )
+    # # 1. Load documents only for structured metadata queries
+    # documents = load_corpus(
+    #     manifest_path=manifest_path,
+    #     corpus_root=corpus_root,
+    # )
 
-    print(f"Loaded documents: {len(documents)}")
+    # print(f"Loaded documents: {len(documents)}")
 
     # 2. Structured metadata service
-    metadata_service = MetadataService(documents)
+    # metadata_service = MetadataService(documents)
+    registry = AssetRegistry(
+        manifest_path
+    )
+
+    metadata_service = MetadataService(
+        registry
+    )
+
 
     # 3. Query embedder
     embedder = Embedder()
@@ -61,6 +69,7 @@ def main():
         "Which model cards describe AI image detectors?",
         "Which projects use diffusion-based methods?",
         "What deployment issues were reported?",
+        "Which model cards discuss fraud detection?"
     ]
 
     for question in questions:
