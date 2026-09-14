@@ -1,0 +1,28 @@
+{
+  "completed_document_ids": [
+    "ai_generated_vs_real_dataset__dataset_card__017",
+    "cnn_detection__paper__000",
+    "cnn_detection__repository_readme__001",
+    "cnn_detection_reproduction__evaluation_report__013",
+    "dire__paper__006",
+    "dire__repository_readme__007",
+    "dm_image_detection__paper__002",
+    "dm_image_detection__repository_readme__003",
+    "genimage__paper__008",
+    "genimage__repository_readme__009",
+    "hemg_ai_generated_vs_real_dataset__dataset_card_metadata__018",
+    "masksim__paper__010",
+    "masksim__repository_readme__011",
+    "nyuad_ai_image_detector__model_card__014",
+    "sdxl_detector__model_card__015",
+    "synthbuster__repository_readme__012",
+    "synthetic_image_detection_pilot__deployment_notes__019",
+    "synthetic_image_detection_pilot__evaluation_report__020",
+    "synthetic_image_detection_pilot__experiment_report__021",
+    "synthetic_image_detection_pilot__postmortem__022",
+    "synthetic_image_detection_pilot__project_brief__023",
+    "umm_maybe_ai_image_detector__model_card__016",
+    "universal_fake_detect__paper__004",
+    "universal_fake_detect__repository_readme__005"
+  ]
+}

@@ -39,20 +39,54 @@ def main():
         "data/raw/manifest.json"
     )
 
+    # --------------------------------------------------
+    # Convert the supplied file path into the path format
+    # expected by manifest.json.
+    #
+    # Example input:
+    #   data/raw/corpus/demo_project/model_card.md
+    #
+    # Stored in manifest as:
+    #   corpus/demo_project/model_card.md
+    #
+    # This keeps manifest paths portable and prevents
+    # duplicated paths such as:
+    #   data/raw/corpus/data/raw/corpus/...
+    # --------------------------------------------------
+    corpus_root = Path("data/raw/corpus").resolve()
+    resolved_file_path = file_path.resolve()
+
+    try:
+        relative_to_corpus = resolved_file_path.relative_to(
+            corpus_root
+        )
+    except ValueError:
+        raise ValueError(
+            "New assets must be stored inside "
+            "data/raw/corpus before registration."
+        )
+
+    manifest_local_path = Path(
+        "corpus"
+    ) / relative_to_corpus
+
+
     record = {
         "project_id": args.project_id,
         "asset_type": args.asset_type,
         "title": args.title,
-        "local_path": str(file_path),
+
+        # Store a portable corpus-relative path rather
+        # than an absolute/local machine path.
+        "local_path": str(manifest_local_path),
+
         "source_url": args.source_url,
         "source_record": args.source_record,
         "license": args.license,
         "status": "registered",
     }
 
-    registry.add_asset(record)
-
-    print("Asset registered.")
+    
 
     # --------------------------------------------------
     # 2. Extract text
@@ -111,9 +145,14 @@ def main():
         embeddings=embeddings,
     )
 
+
     print(
         f"Indexed chunks: {len(chunks)}"
     )
+
+    registry.add_asset(record)
+    
+    print("Asset registered.")
 
     print("\nAsset ingestion complete.")
     print(f"Project: {args.project_id}")
