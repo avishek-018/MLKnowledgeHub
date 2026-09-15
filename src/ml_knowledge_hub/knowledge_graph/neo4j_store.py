@@ -204,3 +204,187 @@ class Neo4jStore:
             self.upsert_relation(
                 relation
             )
+
+    def get_models_for_project(
+        self,
+        project_id: str,
+    ) -> list[dict]:
+        """
+        Return models connected to a project through USES_MODEL.
+
+        Example:
+            Project --USES_MODEL--> Model
+        """
+
+        query = """
+        MATCH (p:Project {entity_id: $project_id})
+            -[:USES_MODEL]->
+            (m:Model)
+
+        RETURN
+            m.entity_id AS entity_id,
+            m.name AS name,
+            m.description AS description
+
+        ORDER BY m.name
+        """
+
+        with self.driver.session() as session:
+            result = session.run(
+                query,
+                project_id=project_id,
+            )
+
+            return [
+                record.data()
+                for record in result
+            ]
+
+
+    def get_projects_for_model(
+        self,
+        model_id: str,
+    ) -> list[dict]:
+        """
+        Return projects that use a particular model.
+
+        Example:
+            Project --USES_MODEL--> Model
+        """
+
+        query = """
+        MATCH (p:Project)
+            -[:USES_MODEL]->
+            (m:Model {entity_id: $model_id})
+
+        RETURN
+            p.entity_id AS entity_id,
+            p.name AS name,
+            p.description AS description
+
+        ORDER BY p.name
+        """
+
+        with self.driver.session() as session:
+            result = session.run(
+                query,
+                model_id=model_id,
+            )
+
+            return [
+                record.data()
+                for record in result
+            ]
+
+
+    def get_datasets_for_model(
+        self,
+        model_id: str,
+    ) -> list[dict]:
+        """
+        Return datasets associated with a model.
+
+        We include both:
+        - TRAINED_ON
+        - EVALUATED_ON
+
+        The relationship type is returned so callers can
+        distinguish training data from evaluation data.
+        """
+
+        query = """
+        MATCH (m:Model {entity_id: $model_id})
+            -[r:TRAINED_ON|EVALUATED_ON]->
+            (d:Dataset)
+
+        RETURN
+            d.entity_id AS entity_id,
+            d.name AS name,
+            d.description AS description,
+            type(r) AS relationship
+
+        ORDER BY d.name
+        """
+
+        with self.driver.session() as session:
+            result = session.run(
+                query,
+                model_id=model_id,
+            )
+
+            return [
+                record.data()
+                for record in result
+            ]
+
+
+    def get_metrics_for_model(
+        self,
+        model_id: str,
+    ) -> list[dict]:
+        """
+        Return metrics reported by a model.
+
+        Example:
+            Model --REPORTS--> Metric
+        """
+
+        query = """
+        MATCH (m:Model {entity_id: $model_id})
+            -[:REPORTS]->
+            (metric:Metric)
+
+        RETURN
+            metric.entity_id AS entity_id,
+            metric.name AS name,
+            metric.description AS description,
+            metric.properties_json AS properties_json
+
+        ORDER BY metric.name
+        """
+
+        with self.driver.session() as session:
+            result = session.run(
+                query,
+                model_id=model_id,
+            )
+
+            return [
+                record.data()
+                for record in result
+            ]
+
+
+    def get_models_for_dataset(
+        self,
+        dataset_id: str,
+    ) -> list[dict]:
+        """
+        Return models connected to a dataset through
+        TRAINED_ON or EVALUATED_ON.
+        """
+
+        query = """
+        MATCH (m:Model)
+            -[r:TRAINED_ON|EVALUATED_ON]->
+            (d:Dataset {entity_id: $dataset_id})
+
+        RETURN
+            m.entity_id AS entity_id,
+            m.name AS name,
+            m.description AS description,
+            type(r) AS relationship
+
+        ORDER BY m.name
+        """
+
+        with self.driver.session() as session:
+            result = session.run(
+                query,
+                dataset_id=dataset_id,
+            )
+
+            return [
+                record.data()
+                for record in result
+            ]

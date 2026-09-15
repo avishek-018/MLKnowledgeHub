@@ -4,10 +4,19 @@ from dataclasses import dataclass
 from typing import Literal
 
 
+# Query types supported by the assistant.
+#
+# graph:
+#   answer directly from Neo4j relationships
+#
+# hybrid:
+#   combine graph structure with vector-retrieved evidence
 QueryType = Literal[
     "metadata",
     "filtered_semantic",
     "semantic",
+    "graph",
+    "hybrid",
 ]
 
 
@@ -87,6 +96,55 @@ def route_query(query: str) -> QueryPlan:
             ],
         )
 
+        # --------------------------------------------------
+    # Graph-structured questions
+    # --------------------------------------------------
+
+    # Questions about what models belong to a project.
+    if (
+        "which models" in q
+        and "project" in q
+    ):
+        return QueryPlan(
+            query_type="graph",
+            query=query,
+            operation="project_models",
+        )
+
+    # Questions about datasets connected to a model.
+    if (
+        "which datasets" in q
+        and "model" in q
+    ):
+        return QueryPlan(
+            query_type="graph",
+            query=query,
+            operation="model_datasets",
+        )
+
+    # Questions about metrics reported by a model.
+    if (
+        "which metrics" in q
+        and "model" in q
+    ):
+        return QueryPlan(
+            query_type="graph",
+            query=query,
+            operation="model_metrics",
+        )
+
+    # Questions asking for broader evidence around a model
+    # benefit from both graph structure and document evidence.
+    if (
+        "tell me about" in q
+        and "model" in q
+    ):
+        return QueryPlan(
+            query_type="hybrid",
+            query=query,
+            operation="model_context",
+        )
+        
     # Default
     return QueryPlan(
         query_type="semantic",

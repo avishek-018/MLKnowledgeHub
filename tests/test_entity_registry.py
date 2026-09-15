@@ -78,3 +78,85 @@ def test_duplicate_entity_rejected(tmp_path):
         assert False
     except ValueError:
         assert True
+
+def test_find_entity_by_name_and_alias(
+    tmp_path,
+):
+    """
+    Entity lookup should work from natural-language
+    questions using either names or aliases.
+    """
+
+    registry = EntityRegistry(
+        tmp_path / "entities.json"
+    )
+
+    entity = EntityCandidate(
+        entity_id="stable_diffusion_xl",
+        name="Stable Diffusion XL",
+        entity_type=EntityType.MODEL,
+        aliases=[
+            "SDXL",
+            "SD XL",
+        ],
+    )
+
+    registry.add_entity(
+        entity
+    )
+
+    # Exact display name.
+    result = registry.find_entity(
+        "Stable Diffusion XL",
+        entity_type=EntityType.MODEL,
+    )
+
+    assert result is not None
+    assert (
+        result.entity_id
+        == "stable_diffusion_xl"
+    )
+
+    # Alias embedded in a natural-language question.
+    result = registry.find_entity(
+        "Which datasets were used by SDXL?",
+        entity_type=EntityType.MODEL,
+    )
+
+    assert result is not None
+    assert (
+        result.entity_id
+        == "stable_diffusion_xl"
+    )
+
+def test_find_entity_by_unique_short_name(
+    tmp_path,
+):
+    """
+    A distinctive shortened name such as 'NYUAD'
+    should resolve to the corresponding project.
+    """
+
+    registry = EntityRegistry(
+        tmp_path / "entities.json"
+    )
+
+    project = EntityCandidate(
+        entity_id="nyuad_ai_image_detector",
+        name="NYUAD AI-generated Images Detector",
+        entity_type=EntityType.PROJECT,
+    )
+
+    registry.add_entity(project)
+
+    result = registry.find_entity(
+        "Which models are used by the NYUAD project?",
+        entity_type=EntityType.PROJECT,
+    )
+
+    assert result is not None
+
+    assert (
+        result.entity_id
+        == "nyuad_ai_image_detector"
+    )

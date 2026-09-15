@@ -1,7 +1,9 @@
 """Assistant service orchestration."""
 
 from ml_knowledge_hub.query.router import route_query
-
+from ml_knowledge_hub.knowledge_graph.extraction_schema import (
+    EntityType,
+)
 
 class KnowledgeAssistant:
     def __init__(
@@ -10,14 +12,30 @@ class KnowledgeAssistant:
         vector_store,
         embedder,
         rag_generator=None,
+        graph_service=None,
+        entity_registry=None,
     ):
         self.metadata_service = metadata_service
         self.vector_store = vector_store
         self.embedder = embedder
         self.rag_generator = rag_generator
+        self.graph_service = graph_service
+
+        # Canonical KG entity registry used to resolve
+        # names and aliases mentioned in user questions.
+        self.entity_registry = entity_registry
 
     def ask(self, query: str) -> dict:
         plan = route_query(query)
+
+        # --------------------------------------------------
+        # Graph query path
+        # --------------------------------------------------
+        if plan.query_type == "graph":
+            return self._handle_graph_query(
+                query=query,
+                operation=plan.operation,
+            )
 
         # Structured metadata query
         if plan.query_type == "metadata":
@@ -162,4 +180,128 @@ class KnowledgeAssistant:
             },
             "sources": sources,
             "results": results,
+        }
+
+
+    def _handle_graph_query(
+        self,
+        query: str,
+        operation: str | None,
+    ) -> dict:
+        """
+        Handle structured graph queries by resolving entity
+        names/aliases against the canonical entity registry.
+        """
+
+        if self.graph_service is None:
+            raise RuntimeError(
+                "GraphQueryService is not configured."
+            )
+
+        if self.entity_registry is None:
+            raise RuntimeError(
+                "EntityRegistry is not configured."
+            )
+
+        # --------------------------------------------------
+        # Project -> Models
+        # --------------------------------------------------
+        if operation == "project_models":
+
+            project = self.entity_registry.find_entity(
+                query,
+                entity_type=EntityType.PROJECT,
+            )
+
+            if project is None:
+                return {
+                    "type": "graph",
+                    "answer": (
+                        "I could not identify the project "
+                        "in the knowledge graph."
+                    ),
+                    "sources": [],
+                    "raw": [],
+                }
+
+            results = self.graph_service.get_project_models(
+                project.entity_id
+            )
+
+            return {
+                "type": "graph",
+                "answer": results,
+                "sources": [],
+                "raw": results,
+            }
+
+        # --------------------------------------------------
+        # Model -> Datasets
+        # --------------------------------------------------
+        if operation == "model_datasets":
+
+            model = self.entity_registry.find_entity(
+                query,
+                entity_type=EntityType.MODEL,
+            )
+
+            if model is None:
+                return {
+                    "type": "graph",
+                    "answer": (
+                        "I could not identify the model "
+                        "in the knowledge graph."
+                    ),
+                    "sources": [],
+                    "raw": [],
+                }
+
+            results = self.graph_service.get_model_datasets(
+                model.entity_id
+            )
+
+            return {
+                "type": "graph",
+                "answer": results,
+                "sources": [],
+                "raw": results,
+            }
+
+        # --------------------------------------------------
+        # Model -> Metrics
+        # --------------------------------------------------
+        if operation == "model_metrics":
+
+            model = self.entity_registry.find_entity(
+                query,
+                entity_type=EntityType.MODEL,
+            )
+
+            if model is None:
+                return {
+                    "type": "graph",
+                    "answer": (
+                        "I could not identify the model "
+                        "in the knowledge graph."
+                    ),
+                    "sources": [],
+                    "raw": [],
+                }
+
+            results = self.graph_service.get_model_metrics(
+                model.entity_id
+            )
+
+            return {
+                "type": "graph",
+                "answer": results,
+                "sources": [],
+                "raw": results,
+            }
+
+        return {
+            "type": "graph",
+            "answer": "Unsupported graph operation.",
+            "sources": [],
+            "raw": [],
         }

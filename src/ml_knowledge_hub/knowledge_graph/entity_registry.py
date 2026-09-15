@@ -147,3 +147,191 @@ class EntityRegistry:
         history.append(record)
 
         self._write(data)
+
+    def find_entity(
+        self,
+        text: str,
+        entity_type=None,
+    ):
+        """
+        Find a canonical entity mentioned in natural-language text.
+
+        Matching priority:
+        1. Exact normalized ID/name/alias
+        2. Full ID/name/alias appearing inside the query
+        3. Unique distinctive-token match
+
+        The optional entity_type prevents, for example, a MODEL
+        from being returned when we are looking for a PROJECT.
+        """
+
+        from ml_knowledge_hub.knowledge_graph.normalizer import (
+            normalize_entity_name,
+        )
+
+        normalized_text = normalize_entity_name(text)
+
+        # --------------------------------------------------
+        # Candidate entities restricted by type when supplied.
+        # --------------------------------------------------
+        entities = [
+            entity
+            for entity in self.list_entities()
+            if (
+                entity_type is None
+                or entity.entity_type == entity_type
+            )
+        ]
+
+        partial_matches = []
+
+        # --------------------------------------------------
+        # 1. Exact/full-string matching.
+        # --------------------------------------------------
+        for entity in entities:
+
+            candidate_strings = [
+                entity.entity_id,
+                entity.name,
+                *entity.aliases,
+            ]
+
+            for candidate_string in candidate_strings:
+
+                normalized_candidate = normalize_entity_name(
+                    candidate_string
+                )
+
+                # Exact normalized match.
+                if normalized_candidate == normalized_text:
+                    return entity
+
+                # Full entity name/alias occurs inside
+                # a longer natural-language question.
+                if normalized_candidate in normalized_text:
+                    partial_matches.append(
+                        (
+                            len(normalized_candidate),
+                            entity,
+                        )
+                    )
+
+        # Prefer the longest/fullest match.
+        if partial_matches:
+            partial_matches.sort(
+                key=lambda item: item[0],
+                reverse=True,
+            )
+
+            return partial_matches[0][1]
+
+        # --------------------------------------------------
+        # 2. Unique distinctive-token fallback.
+        #
+        # Example:
+        #
+        #   query:
+        #       "Which models are used by the NYUAD project?"
+        #
+        #   entity:
+        #       "NYUAD AI-generated Images Detector"
+        #
+        # The unique token "nyuad" is enough to identify the
+        # project even though the full name is not in the query.
+        # --------------------------------------------------
+        query_tokens = set(
+            normalized_text.split()
+        )
+
+        token_matches = []
+
+        # Very common words should not identify an entity.
+        ignored_tokens = {
+            "model",
+            "models",
+            "project",
+            "projects",
+            "dataset",
+            "datasets",
+            "image",
+            "images",
+            "detector",
+            "detection",
+            "generated",
+            "used",
+            "uses",
+            "use",
+            "which",
+            "what",
+            "the",
+            "by",
+            "for",
+            "are",
+            "is",
+        }
+
+        for entity in entities:
+
+            # Build searchable text from canonical ID,
+            # display name, and known aliases.
+            candidate_strings = [
+                entity.entity_id,
+                entity.name,
+                *entity.aliases,
+            ]
+
+            entity_tokens = set()
+
+            for candidate_string in candidate_strings:
+                entity_tokens.update(
+                    normalize_entity_name(
+                        candidate_string
+                    ).split()
+                )
+
+            # Only use reasonably distinctive tokens.
+            distinctive_tokens = {
+                token
+                for token in entity_tokens
+                if (
+                    len(token) >= 4
+                    and token not in ignored_tokens
+                )
+            }
+
+            overlap = (
+                query_tokens
+                & distinctive_tokens
+            )
+
+            if overlap:
+                token_matches.append(
+                    (
+                        len(overlap),
+                        entity,
+                    )
+                )
+
+        # --------------------------------------------------
+        # Only accept the fallback if exactly one entity
+        # has the best score.
+        #
+        # Ambiguous matches return None instead of guessing.
+        # --------------------------------------------------
+        if token_matches:
+
+            best_score = max(
+                score
+                for score, _ in token_matches
+            )
+
+            best_matches = [
+                entity
+                for score, entity in token_matches
+                if score == best_score
+            ]
+
+            if len(best_matches) == 1:
+                return best_matches[0]
+
+        return None
