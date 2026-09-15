@@ -100,7 +100,8 @@ def main():
         "Which model cards discuss fraud detection?",
         "Which models are used by the NYUAD project?",
         "Which datasets are used by the AI-generated images detector model?",
-        "Which metrics are reported by the AI-generated images detector model?"
+        "Which metrics are reported by the AI-generated images detector model?",
+        "Tell me about the AI-generated images detector model.",
     ]
 
     for question in questions:
@@ -158,6 +159,23 @@ def main():
             for item in result.get("raw", []):
                 print(item)
 
+        elif result["type"] == "hybrid":
+            print("\nGRAPH CONTEXT:")
+            print(result.get("graph_context"))
+
+            print("\nSOURCES:")
+
+            for source in result.get(
+                "sources",
+                [],
+            ):
+                print(
+                    f"{source['source_id']} | "
+                    f"{source['title']} | "
+                    f"{source['project_id']} | "
+                    f"{source['asset_type']} | "
+                    f"score={source['score']:.4f}"
+                )
     # --------------------------------------------------
     # Close Neo4j after all questions are processed.
     # --------------------------------------------------

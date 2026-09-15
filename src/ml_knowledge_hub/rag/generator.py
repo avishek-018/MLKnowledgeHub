@@ -77,3 +77,86 @@ class RAGGenerator:
         )
 
         return response.output_text
+
+
+    def generate_hybrid(
+    self,
+    question: str,
+    graph_context: dict,
+    retrieved_results,
+) -> str:
+        """
+        Generate an answer using structured graph facts
+        together with retrieved textual evidence.
+        """
+
+        import json
+
+        # --------------------------------------------------
+        # Convert retrieved vector results into numbered
+        # evidence blocks that can be cited as [S1], [S2], ...
+        # --------------------------------------------------
+        evidence_blocks = []
+
+        for index, result in enumerate(
+            retrieved_results,
+            start=1,
+        ):
+            payload = result.payload
+
+            evidence_blocks.append(
+                (
+                    f"[S{index}]\n"
+                    f"Title: {payload.get('title')}\n"
+                    f"Project: {payload.get('project_id')}\n"
+                    f"Asset type: {payload.get('asset_type')}\n"
+                    f"Text:\n{payload.get('text')}"
+                )
+            )
+
+        evidence_text = "\n\n".join(
+            evidence_blocks
+        )
+
+        graph_text = json.dumps(
+            graph_context,
+            indent=2,
+            ensure_ascii=False,
+        )
+
+        prompt = f"""
+    You are answering a question about an enterprise machine-learning knowledge base.
+
+    Use BOTH:
+    1. structured knowledge-graph facts
+    2. retrieved document evidence
+
+    Question:
+    {question}
+
+    Structured graph context:
+    {graph_text}
+
+    Retrieved document evidence:
+    {evidence_text}
+
+    Rules:
+
+    1. Use only the supplied graph context and document evidence.
+    2. Do not invent facts.
+    3. Graph facts may be stated directly when clearly represented.
+    4. Use document evidence to explain or support graph facts.
+    5. Cite textual evidence using [S1], [S2], etc.
+    6. Do not create citations for graph-only facts unless supporting text exists.
+    7. If graph and text evidence disagree, explicitly say so.
+    8. Distinguish simulated/template enterprise documents from real public artifacts.
+    9. If evidence is insufficient, say so clearly.
+    10. Give a concise, readable answer rather than dumping raw graph data.
+    """.strip()
+
+        response = self.client.responses.create(
+            model=self.model,
+            input=prompt,
+        )
+
+        return response.output_text.strip()

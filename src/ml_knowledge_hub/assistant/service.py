@@ -37,6 +37,15 @@ class KnowledgeAssistant:
                 operation=plan.operation,
             )
 
+        # --------------------------------------------------
+        # Hybrid GraphRAG query path
+        # --------------------------------------------------
+        if plan.query_type == "hybrid":
+            return self._handle_hybrid_query(
+                query=query,
+                operation=plan.operation,
+            )
+
         # Structured metadata query
         if plan.query_type == "metadata":
             return self._handle_metadata(plan)
@@ -303,5 +312,189 @@ class KnowledgeAssistant:
             "type": "graph",
             "answer": "Unsupported graph operation.",
             "sources": [],
+            "raw": [],
+        }
+
+    def _handle_hybrid_query(
+    self,
+    query: str,
+    operation: str | None,
+) -> dict:
+        """
+        Combine Neo4j graph structure with Qdrant semantic
+        evidence and synthesize one grounded answer.
+        """
+
+        if self.graph_service is None:
+            raise RuntimeError(
+                "GraphQueryService is not configured."
+            )
+
+        if self.entity_registry is None:
+            raise RuntimeError(
+                "EntityRegistry is not configured."
+            )
+
+        if self.rag_generator is None:
+            raise RuntimeError(
+                "RAG generator is not configured."
+            )
+
+        # --------------------------------------------------
+        # For the first hybrid operation, resolve a MODEL
+        # mentioned in the user's question.
+        # --------------------------------------------------
+        if operation == "model_context":
+
+            model = self.entity_registry.find_entity(
+                query,
+                entity_type=EntityType.MODEL,
+            )
+
+            if model is None:
+                return {
+                    "type": "hybrid",
+                    "answer": (
+                        "I could not identify the model "
+                        "in the knowledge graph."
+                    ),
+                    "sources": [],
+                    "graph_context": {},
+                    "raw": [],
+                }
+
+            # --------------------------------------------------
+            # 1. Retrieve structured graph evidence from Neo4j.
+            # --------------------------------------------------
+            graph_context = (
+                self.graph_service.get_model_context(
+                    model.entity_id
+                )
+            )
+
+            # --------------------------------------------------
+            # 2. Retrieve supporting text evidence from Qdrant.
+            #
+            # IMPORTANT:
+            # The graph has already identified which project(s)
+            # this model belongs to.
+            #
+            # Instead of searching the entire corpus and hoping
+            # relevant project documents appear in the top-k,
+            # use the graph project IDs to constrain Qdrant
+            # retrieval directly.
+            # --------------------------------------------------
+            query_embedding = self.embedder.encode(
+                [query]
+            )[0]
+
+            project_ids = {
+                project["entity_id"]
+                for project in graph_context.get(
+                    "projects",
+                    []
+                )
+            }
+
+            evidence_results = []
+
+
+            # --------------------------------------------------
+            # Search each graph-linked project independently.
+            # --------------------------------------------------
+            if project_ids:
+
+                for project_id in project_ids:
+
+                    project_hits = self.vector_store.search(
+                        query_embedding=query_embedding,
+                        limit=10,
+                        project_id=project_id,
+                    )
+
+                    evidence_results.extend(
+                        project_hits
+                    )
+
+            else:
+                # --------------------------------------------------
+                # If the graph has no project relationship, fall
+                # back to ordinary semantic retrieval.
+                #
+                # This fallback is allowed only when there is no
+                # graph-linked project at all.
+                # --------------------------------------------------
+                evidence_results = self.vector_store.search(
+                    query_embedding=query_embedding,
+                    limit=10,
+                )
+
+
+            # --------------------------------------------------
+            # Remove repeated chunks/documents and keep a small,
+            # high-quality evidence set for synthesis.
+            # --------------------------------------------------
+            evidence_results = (
+                self._deduplicate_by_document(
+                    evidence_results
+                )[:5]
+            )
+
+            # --------------------------------------------------
+            # 3. Ask the RAG generator to synthesize using BOTH
+            # graph facts and document evidence.
+            # --------------------------------------------------
+            answer = (
+                self.rag_generator.generate_hybrid(
+                    question=query,
+                    graph_context=graph_context,
+                    retrieved_results=evidence_results,
+                )
+            )
+
+            # --------------------------------------------------
+            # 4. Build normal source metadata for citations.
+            # --------------------------------------------------
+            sources = []
+
+            for index, result in enumerate(
+                evidence_results,
+                start=1,
+            ):
+                sources.append(
+                    {
+                        "source_id": f"S{index}",
+                        "title": result.payload.get(
+                            "title"
+                        ),
+                        "project_id": result.payload.get(
+                            "project_id"
+                        ),
+                        "asset_type": result.payload.get(
+                            "asset_type"
+                        ),
+                        "document_id": result.payload.get(
+                            "document_id"
+                        ),
+                        "score": result.score,
+                        "source_url": result.payload.get(
+                            "source_url"
+                        ),
+                    }
+                )
+
+            return {
+                "type": "hybrid",
+                "answer": answer,
+                "sources": sources,
+                "graph_context": graph_context,
+                "raw": evidence_results,
+            }
+
+        return {
+            "type": "hybrid",
+            "answer": "Unsupported hybrid operation.",
+            "sources": [],
+            "graph_context": {},
             "raw": [],
         }
