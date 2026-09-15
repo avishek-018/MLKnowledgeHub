@@ -1,16 +1,13 @@
-"""Route user queries to retrieval and generation workflows."""
+"""Query routing adapter for the ML Knowledge Hub."""
 
 from dataclasses import dataclass
 from typing import Literal
 
+from ml_knowledge_hub.agents.orchestrator import (
+    AgentOrchestrator,
+)
 
-# Query types supported by the assistant.
-#
-# graph:
-#   answer directly from Neo4j relationships
-#
-# hybrid:
-#   combine graph structure with vector-retrieved evidence
+
 QueryType = Literal[
     "metadata",
     "filtered_semantic",
@@ -22,131 +19,120 @@ QueryType = Literal[
 
 @dataclass
 class QueryPlan:
+    """
+    Execution plan used by the existing KnowledgeAssistant.
+
+    This is intentionally kept separate from QueryPlanLLM.
+
+    QueryPlanLLM:
+        used by the agentic reasoning layer.
+
+    QueryPlan:
+        used by the deterministic execution layer.
+    """
+
     query_type: QueryType
     query: str
+
     asset_types: list[str] | None = None
     operation: str | None = None
 
+    entity_mention: str | None = None
+    entity_type: str | None = None
 
-def route_query(query: str) -> QueryPlan:
-    q = query.lower().strip()
+    target_entity_type: str | None = None
 
-    # Structured metadata queries
-    if "how many projects" in q:
-        return QueryPlan(
-            query_type="metadata",
-            query=query,
-            operation="count_projects",
+
+class QueryRouter:
+    """
+    Convert a natural-language query into an executable QueryPlan.
+
+    Planning is delegated to the agentic orchestration layer:
+
+        Planner
+            ↓
+        Evaluator
+            ↓
+        Revision if needed
+            ↓
+        final plan
+
+    The router then converts that typed LLM plan into the format
+    expected by the existing KnowledgeAssistant.
+    """
+
+    def __init__(
+        self,
+        orchestrator: AgentOrchestrator | None = None,
+    ):
+        # --------------------------------------------------
+        # Dependency injection allows us to substitute a fake
+        # orchestrator during unit tests.
+        # --------------------------------------------------
+        self.orchestrator = (
+            orchestrator
+            if orchestrator is not None
+            else AgentOrchestrator()
         )
 
-    if "list all projects" in q or "list the projects" in q:
-        return QueryPlan(
-            query_type="metadata",
-            query=query,
-            operation="list_projects",
+    def route(
+        self,
+        query: str,
+    ) -> QueryPlan:
+        """
+        Produce the final executable query plan.
+        """
+
+        # --------------------------------------------------
+        # Run the complete agentic planning workflow.
+        # --------------------------------------------------
+        orchestration_result = self.orchestrator.create_plan(
+            query=query
         )
 
-    if "how many model cards" in q:
-        return QueryPlan(
-            query_type="metadata",
-            query=query,
-            operation="count_model_cards",
-        )
+        final_plan = orchestration_result[
+            "final_plan"
+        ]
 
-    # More specific filtered semantic queries first
-    if "deployment note" in q:
-        return QueryPlan(
-            query_type="filtered_semantic",
-            query=query,
-            asset_types=["deployment_notes"],
-        )
-
-    if "postmortem" in q:
-        return QueryPlan(
-            query_type="filtered_semantic",
-            query=query,
-            asset_types=["postmortem"],
-        )
-
-    if "model card" in q:
-        return QueryPlan(
-            query_type="filtered_semantic",
-            query=query,
-            asset_types=["model_card"],
-        )
-
-    # Broader deployment-related query
-    if "deployment" in q:
-        return QueryPlan(
-            query_type="filtered_semantic",
-            query=query,
-            asset_types=[
-                "deployment_notes",
-                "postmortem"
-            ],
-        )
-
-    if "evaluation" in q:
-        return QueryPlan(
-            query_type="filtered_semantic",
-            query=query,
-            asset_types=[
-                "evaluation_report",
-                "experiment_report",
-            ],
+        # --------------------------------------------------
+        # Convert typed asset enums into the string values
+        # expected by Qdrant filtering.
+        # --------------------------------------------------
+        asset_types = (
+            [
+                asset_type.value
+                for asset_type in final_plan.asset_types
+            ]
+            if final_plan.asset_types
+            else None
         )
 
         # --------------------------------------------------
-    # Graph-structured questions
-    # --------------------------------------------------
-
-    # Questions about what models belong to a project.
-    if (
-        "which models" in q
-        and "project" in q
-    ):
-        return QueryPlan(
-            query_type="graph",
-            query=query,
-            operation="project_models",
+        # Convert entity enum values back into strings used
+        # by the current execution layer.
+        # --------------------------------------------------
+        entity_type = (
+            final_plan.entity_type.value
+            if final_plan.entity_type
+            else None
         )
 
-    # Questions about datasets connected to a model.
-    if (
-        "which datasets" in q
-        and "model" in q
-    ):
-        return QueryPlan(
-            query_type="graph",
-            query=query,
-            operation="model_datasets",
+        target_entity_type = (
+            final_plan.target_entity_type.value
+            if final_plan.target_entity_type
+            else None
         )
 
-    # Questions about metrics reported by a model.
-    if (
-        "which metrics" in q
-        and "model" in q
-    ):
+        # --------------------------------------------------
+        # Convert the agent-generated plan into the existing
+        # execution-plan representation.
+        # --------------------------------------------------
         return QueryPlan(
-            query_type="graph",
+            query_type=final_plan.query_type.value,
             query=query,
-            operation="model_metrics",
+            operation=final_plan.operation.value,
+            asset_types=asset_types,
+            entity_mention=final_plan.entity_mention,
+            entity_type=entity_type,
+            target_entity_type=target_entity_type,
         )
-
-    # Questions asking for broader evidence around a model
-    # benefit from both graph structure and document evidence.
-    if (
-        "tell me about" in q
-        and "model" in q
-    ):
-        return QueryPlan(
-            query_type="hybrid",
-            query=query,
-            operation="model_context",
-        )
-        
-    # Default
-    return QueryPlan(
-        query_type="semantic",
-        query=query,
-    )

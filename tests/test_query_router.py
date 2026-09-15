@@ -1,10 +1,45 @@
-"""Tests for query routing utilities."""
+from ml_knowledge_hub.query.planner_schema import (
+    PlannedAssetType,
+    PlannedOperation,
+    PlannedQueryType,
+    QueryPlanLLM,
+)
+from ml_knowledge_hub.query.router import (
+    QueryRouter,
+)
 
-from ml_knowledge_hub.query.router import route_query
+
+class FakeOrchestrator:
+    """Return a deterministic final plan without making LLM calls."""
+
+    def __init__(
+        self,
+        plan: QueryPlanLLM,
+    ):
+        self.final_plan = plan
+
+    def create_plan(
+        self,
+        query: str,
+    ) -> dict:
+        return {"final_plan": self.final_plan}
 
 
-def test_count_projects_route():
-    plan = route_query(
+def make_router(plan: QueryPlanLLM) -> QueryRouter:
+    return QueryRouter(
+        orchestrator=FakeOrchestrator(plan)
+    )
+
+
+def test_metadata_count_projects():
+    router = make_router(
+        QueryPlanLLM(
+            query_type=PlannedQueryType.METADATA,
+            operation=PlannedOperation.COUNT_PROJECTS,
+        )
+    )
+
+    plan = router.route(
         "How many projects do we have?"
     )
 
@@ -12,37 +47,61 @@ def test_count_projects_route():
     assert plan.operation == "count_projects"
 
 
-def test_list_projects_route():
-    plan = route_query(
-        "Please list all projects"
+def test_graph_project_models():
+    router = make_router(
+        QueryPlanLLM(
+            query_type=PlannedQueryType.GRAPH,
+            operation=PlannedOperation.PROJECT_MODELS,
+            entity_mention="NYUAD",
+            entity_type="project",
+            asset_types=None,
+        )
     )
 
-    assert plan.query_type == "metadata"
-    assert plan.operation == "list_projects"
+    plan = router.route(
+        "Which models are used by NYUAD?"
+    )
+
+    assert plan.query_type == "graph"
+    assert plan.operation == "project_models"
+    assert plan.entity_mention == "NYUAD"
 
 
-def test_model_card_filter():
-    plan = route_query(
+def test_hybrid_model_context():
+    router = make_router(
+        QueryPlanLLM(
+            query_type=PlannedQueryType.HYBRID,
+            operation=PlannedOperation.MODEL_CONTEXT,
+            entity_mention="AI-generated images detector",
+            entity_type="model",
+            asset_types=None,
+        )
+    )
+
+    plan = router.route(
+        "Give me details about the AI-generated images detector."
+    )
+
+    assert plan.query_type == "hybrid"
+    assert plan.operation == "model_context"
+    assert (
+        plan.entity_mention
+        == "AI-generated images detector"
+    )
+
+
+def test_semantic_plan_preserves_asset_types():
+    router = make_router(
+        QueryPlanLLM(
+            query_type=PlannedQueryType.SEMANTIC,
+            operation=PlannedOperation.SEMANTIC_SEARCH,
+            asset_types=[PlannedAssetType.MODEL_CARD],
+        )
+    )
+
+    plan = router.route(
         "Which model cards describe AI image detectors?"
     )
 
-    assert plan.query_type == "filtered_semantic"
-    assert plan.asset_types == ["model_card"]
-
-
-def test_general_query():
-    plan = route_query(
-        "Which projects use diffusion-based methods?"
-    )
-
     assert plan.query_type == "semantic"
-
-def test_deployment_query_filter():
-    plan = route_query(
-        "What deployment issues were reported?"
-    )
-
-    assert plan.query_type == "filtered_semantic"
-
-    assert "deployment_notes" in plan.asset_types
-    assert "postmortem" in plan.asset_types
+    assert plan.asset_types == ["model_card"]

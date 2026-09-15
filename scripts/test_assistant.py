@@ -102,6 +102,7 @@ def main():
         "Which datasets are used by the AI-generated images detector model?",
         "Which metrics are reported by the AI-generated images detector model?",
         "Tell me about the AI-generated images detector model.",
+        "What do we know about GenImage as a project?",
     ]
 
     for question in questions:

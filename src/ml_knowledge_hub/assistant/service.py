@@ -1,6 +1,8 @@
 """Assistant service orchestration."""
 
-from ml_knowledge_hub.query.router import route_query
+from ml_knowledge_hub.query.router import (
+    QueryRouter,
+)
 from ml_knowledge_hub.knowledge_graph.extraction_schema import (
     EntityType,
 )
@@ -14,19 +16,34 @@ class KnowledgeAssistant:
         rag_generator=None,
         graph_service=None,
         entity_registry=None,
+        query_router=None,
     ):
         self.metadata_service = metadata_service
         self.vector_store = vector_store
         self.embedder = embedder
         self.rag_generator = rag_generator
         self.graph_service = graph_service
-
-        # Canonical KG entity registry used to resolve
-        # names and aliases mentioned in user questions.
         self.entity_registry = entity_registry
 
+        # --------------------------------------------------
+        # Query planner/router
+        #
+        # A router can be injected during tests.
+        # Otherwise, use the normal LLM-backed QueryRouter.
+        # --------------------------------------------------
+        self.query_router = (
+            query_router
+            if query_router is not None
+            else QueryRouter()
+        )
+
     def ask(self, query: str) -> dict:
-        plan = route_query(query)
+        # --------------------------------------------------
+        # Build a structured execution plan for this question.
+        # --------------------------------------------------
+        plan = self.query_router.route(
+            query
+        )
 
         # --------------------------------------------------
         # Graph query path
@@ -35,33 +52,32 @@ class KnowledgeAssistant:
             return self._handle_graph_query(
                 query=query,
                 operation=plan.operation,
+                entity_mention=plan.entity_mention,
             )
 
-        # --------------------------------------------------
-        # Hybrid GraphRAG query path
-        # --------------------------------------------------
         if plan.query_type == "hybrid":
             return self._handle_hybrid_query(
                 query=query,
                 operation=plan.operation,
+                entity_mention=plan.entity_mention,
             )
 
         # Structured metadata query
         if plan.query_type == "metadata":
             return self._handle_metadata(plan)
 
-        # Semantic query with metadata filtering
-        if plan.query_type == "filtered_semantic":
+        # --------------------------------------------------
+        # Semantic retrieval.
+        #
+        # asset_types may be None for broad semantic search
+        # or contain one or more artifact types selected by
+        # the agentic planning workflow.
+        # --------------------------------------------------
+        if plan.query_type == "semantic":
             return self._handle_semantic(
                 query=plan.query,
                 asset_types=plan.asset_types,
             )
-
-        # General semantic query
-        return self._handle_semantic(
-            query=plan.query,
-            asset_types=None,
-        )
 
     def _handle_metadata(self, plan) -> dict:
         if plan.operation == "count_projects":
@@ -196,6 +212,7 @@ class KnowledgeAssistant:
         self,
         query: str,
         operation: str | None,
+        entity_mention: str | None = None,
     ) -> dict:
         """
         Handle structured graph queries by resolving entity
@@ -216,9 +233,9 @@ class KnowledgeAssistant:
         # Project -> Models
         # --------------------------------------------------
         if operation == "project_models":
-
+            lookup_text = entity_mention or query
             project = self.entity_registry.find_entity(
-                query,
+                lookup_text,
                 entity_type=EntityType.PROJECT,
             )
 
@@ -248,9 +265,9 @@ class KnowledgeAssistant:
         # Model -> Datasets
         # --------------------------------------------------
         if operation == "model_datasets":
-
+            lookup_text = entity_mention or query
             model = self.entity_registry.find_entity(
-                query,
+                lookup_text,
                 entity_type=EntityType.MODEL,
             )
 
@@ -280,9 +297,9 @@ class KnowledgeAssistant:
         # Model -> Metrics
         # --------------------------------------------------
         if operation == "model_metrics":
-
+            lookup_text = entity_mention or query
             model = self.entity_registry.find_entity(
-                query,
+                lookup_text,
                 entity_type=EntityType.MODEL,
             )
 
@@ -316,10 +333,11 @@ class KnowledgeAssistant:
         }
 
     def _handle_hybrid_query(
-    self,
-    query: str,
-    operation: str | None,
-) -> dict:
+        self,
+        query: str,
+        operation: str | None,
+        entity_mention: str | None = None,
+    ) -> dict:
         """
         Combine Neo4j graph structure with Qdrant semantic
         evidence and synthesize one grounded answer.
@@ -345,9 +363,9 @@ class KnowledgeAssistant:
         # mentioned in the user's question.
         # --------------------------------------------------
         if operation == "model_context":
-
+            lookup_text = entity_mention or query
             model = self.entity_registry.find_entity(
-                query,
+                lookup_text,
                 entity_type=EntityType.MODEL,
             )
 
@@ -491,6 +509,111 @@ class KnowledgeAssistant:
                 "raw": evidence_results,
             }
 
+        # --------------------------------------------------
+        # Project-level hybrid context
+        # --------------------------------------------------
+        if operation == "project_context":
+            lookup_text = entity_mention or query
+
+            project = self.entity_registry.find_entity(
+                lookup_text,
+                entity_type=EntityType.PROJECT,
+            )
+
+            if project is None:
+                return {
+                    "type": "hybrid",
+                    "answer": (
+                        "I could not identify the project "
+                        "in the knowledge graph."
+                    ),
+                    "sources": [],
+                    "graph_context": {},
+                    "raw": [],
+                }
+
+            # --------------------------------------------------
+            # 1. Retrieve structured graph evidence.
+            # --------------------------------------------------
+            graph_context = (
+                self.graph_service.get_project_context(
+                    project.entity_id
+                )
+            )
+
+            # --------------------------------------------------
+            # 2. Retrieve textual evidence only from documents
+            # belonging to this project.
+            # --------------------------------------------------
+            query_embedding = self.embedder.encode(
+                [query]
+            )[0]
+
+            evidence_results = self.vector_store.search(
+                query_embedding=query_embedding,
+                limit=10,
+                project_id=project.entity_id,
+            )
+
+            # --------------------------------------------------
+            # Deduplicate documents and keep a compact evidence
+            # set for answer generation.
+            # --------------------------------------------------
+            evidence_results = (
+                self._deduplicate_by_document(
+                    evidence_results
+                )[:5]
+            )
+
+            # --------------------------------------------------
+            # 3. Synthesize graph + document evidence.
+            # --------------------------------------------------
+            answer = (
+                self.rag_generator.generate_hybrid(
+                    question=query,
+                    graph_context=graph_context,
+                    retrieved_results=evidence_results,
+                )
+            )
+
+            # --------------------------------------------------
+            # 4. Build source metadata.
+            # --------------------------------------------------
+            sources = []
+
+            for index, result in enumerate(
+                evidence_results,
+                start=1,
+            ):
+                sources.append(
+                    {
+                        "source_id": f"S{index}",
+                        "title": result.payload.get(
+                            "title"
+                        ),
+                        "project_id": result.payload.get(
+                            "project_id"
+                        ),
+                        "asset_type": result.payload.get(
+                            "asset_type"
+                        ),
+                        "document_id": result.payload.get(
+                            "document_id"
+                        ),
+                        "score": result.score,
+                        "source_url": result.payload.get(
+                            "source_url"
+                        ),
+                    }
+                )
+
+            return {
+                "type": "hybrid",
+                "answer": answer,
+                "sources": sources,
+                "graph_context": graph_context,
+                "raw": evidence_results,
+            }
         return {
             "type": "hybrid",
             "answer": "Unsupported hybrid operation.",

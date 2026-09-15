@@ -120,3 +120,22 @@ class GraphQueryService:
                 model_id
             ),
         }
+    def get_project_context(
+        self,
+        project_id: str,
+    ) -> dict:
+        """
+        Return structured graph context for a project.
+
+        For the MVP, project context includes the models
+        associated with the project.
+        """
+
+        models = self.get_project_models(
+            project_id
+        )
+
+        return {
+            "project_id": project_id,
+            "models": models,
+        }

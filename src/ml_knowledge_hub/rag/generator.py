@@ -152,6 +152,13 @@ class RAGGenerator:
     8. Distinguish simulated/template enterprise documents from real public artifacts.
     9. If evidence is insufficient, say so clearly.
     10. Give a concise, readable answer rather than dumping raw graph data.
+    11. The structured graph context determines the entity being discussed.
+    12. Retrieved evidence should only be used as supporting evidence for that
+        entity. Do not transfer facts from another project, model, or dataset
+        to the graph entity.
+    13. If retrieved evidence refers to a different project or model, explicitly
+        exclude those facts from the answer rather than treating them as
+        properties of the requested entity.
     """.strip()
 
         response = self.client.responses.create(

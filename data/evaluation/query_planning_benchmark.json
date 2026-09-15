@@ -1,0 +1,323 @@
+[
+  {
+    "id": "q001",
+    "query": "How many projects do we have?",
+    "expected_query_type": "metadata",
+    "expected_operation": "count_projects",
+    "expected_entity_type": null,
+    "expected_target_entity_type": null,
+    "expected_asset_types": null
+  },
+  {
+    "id": "q002",
+    "query": "Please list all projects.",
+    "expected_query_type": "metadata",
+    "expected_operation": "list_projects",
+    "expected_entity_type": null,
+    "expected_target_entity_type": "project",
+    "expected_asset_types": null
+  },
+  {
+    "id": "q003",
+    "query": "How many model cards are registered?",
+    "expected_query_type": "metadata",
+    "expected_operation": "count_model_cards",
+    "expected_entity_type": null,
+    "expected_target_entity_type": null,
+    "expected_asset_types": null
+  },
+  {
+    "id": "q004",
+    "query": "What models belong to NYUAD?",
+    "expected_query_type": "graph",
+    "expected_operation": "project_models",
+    "expected_entity_type": "project",
+    "expected_target_entity_type": "model",
+    "expected_asset_types": null
+  },
+  {
+    "id": "q005",
+    "query": "Which models are associated with the NYUAD project?",
+    "expected_query_type": "graph",
+    "expected_operation": "project_models",
+    "expected_entity_type": "project",
+    "expected_target_entity_type": "model",
+    "expected_asset_types": null
+  },
+  {
+    "id": "q006",
+    "query": "What data was the AI-generated images detector evaluated on?",
+    "expected_query_type": "graph",
+    "expected_operation": "model_datasets",
+    "expected_entity_type": "model",
+    "expected_target_entity_type": "dataset",
+    "expected_asset_types": null
+  },
+  {
+    "id": "q007",
+    "query": "What metrics are reported for the AI-generated images detector?",
+    "expected_query_type": "graph",
+    "expected_operation": "model_metrics",
+    "expected_entity_type": "model",
+    "expected_target_entity_type": "metric",
+    "expected_asset_types": null
+  },
+  {
+    "id": "q008",
+    "query": "Give me an overview of the NYUAD detector.",
+    "expected_query_type": "hybrid",
+    "expected_operation": "model_context",
+    "expected_entity_type": "model",
+    "expected_target_entity_type": null,
+    "expected_asset_types": null
+  },
+  {
+    "id": "q009",
+    "query": "What do we know about GenImage as a project?",
+    "expected_query_type": "hybrid",
+    "expected_operation": "project_context",
+    "expected_entity_type": "project",
+    "expected_target_entity_type": null,
+    "expected_asset_types": null
+  },
+  {
+    "id": "q010",
+    "query": "Summarize the NYUAD AI image detector.",
+    "expected_query_type": "hybrid",
+    "expected_operation": "model_context",
+    "expected_entity_type": "model",
+    "expected_target_entity_type": null,
+    "expected_asset_types": null
+  },
+  {
+    "id": "q011",
+    "query": "Which model cards describe AI image detectors?",
+    "expected_query_type": "semantic",
+    "expected_operation": "semantic_search",
+    "expected_entity_type": null,
+    "expected_target_entity_type": null,
+    "expected_asset_types": [
+      "model_card"
+    ]
+  },
+  {
+    "id": "q012",
+    "query": "Do any model cards discuss fraud detection?",
+    "expected_query_type": "semantic",
+    "expected_operation": "semantic_search",
+    "expected_entity_type": null,
+    "expected_target_entity_type": null,
+    "expected_asset_types": [
+      "model_card"
+    ]
+  },
+  {
+    "id": "q013",
+    "query": "Do we have evidence that the CNN detector was reproduced?",
+    "expected_query_type": "semantic",
+    "expected_operation": "semantic_search",
+    "expected_entity_type": "model",
+    "expected_target_entity_type": null,
+    "expected_asset_types": [
+      "reproducibility_report"
+    ]
+  },
+  {
+    "id": "q014",
+    "query": "What happened during the synthetic-image deployment incident?",
+    "expected_query_type": "semantic",
+    "expected_operation": "semantic_search",
+    "expected_entity_type": null,
+    "expected_target_entity_type": null,
+    "expected_asset_types": [
+      "postmortem"
+    ]
+  },
+  {
+    "id": "q015",
+    "query": "What did the evaluation documents conclude about the pilot?",
+    "expected_query_type": "semantic",
+    "expected_operation": "semantic_search",
+    "expected_entity_type": null,
+    "expected_target_entity_type": null,
+    "expected_asset_types": [
+      "evaluation_report"
+    ]
+  },
+  {
+    "id": "q016",
+    "query": "Describe the experimental findings for the pilot.",
+    "expected_query_type": "semantic",
+    "expected_operation": "semantic_search",
+    "expected_entity_type": "experiment",
+    "expected_target_entity_type": null,
+    "expected_asset_types": [
+      "experiment_report"
+    ]
+  },
+  {
+    "id": "q017",
+    "query": "What implementation guidance is available for DIRE?",
+    "expected_query_type": "semantic",
+    "expected_operation": "semantic_search",
+    "expected_entity_type": null,
+    "expected_target_entity_type": null,
+    "expected_asset_types": [
+      "repository_readme"
+    ]
+  },
+  {
+    "id": "q018",
+    "query": "Which projects are related to diffusion-generated images?",
+    "expected_query_type": "semantic",
+    "expected_operation": "semantic_search",
+    "expected_entity_type": null,
+    "expected_target_entity_type": "project",
+    "expected_asset_types": null
+  },
+  {
+    "id": "q019",
+    "query": "Find projects concerned with detecting synthetic images.",
+    "expected_query_type": "semantic",
+    "expected_operation": "semantic_search",
+    "expected_entity_type": null,
+    "expected_target_entity_type": "project",
+    "expected_asset_types": null
+  },
+  {
+    "id": "q020",
+    "query": "What do the papers say about generalization across image generators?",
+    "expected_query_type": "semantic",
+    "expected_operation": "semantic_search",
+    "expected_entity_type": null,
+    "expected_target_entity_type": null,
+    "expected_asset_types": [
+      "paper"
+    ]
+  },
+  {
+    "id": "q021",
+    "query": "What information do we have about the datasets behind the NYUAD detector?",
+    "expected_query_type": "graph",
+    "expected_operation": "model_datasets",
+    "expected_entity_type": "model",
+    "expected_target_entity_type": "dataset",
+    "expected_asset_types": null
+  },
+{
+  "id": "q022",
+  "query": "Show me what NYUAD uses for evaluation.",
+  "acceptable_plans": [
+    {
+      "query_type": "semantic",
+      "operation": "semantic_search",
+      "asset_types": [
+        "evaluation_report"
+      ]
+    },
+    {
+      "query_type": "hybrid",
+      "operation": "project_context",
+      "asset_types": null
+    }
+  ]
+},
+  {
+  "id": "q023",
+  "query": "What can you tell me about DIRE and how it is implemented?",
+  "acceptable_plans": [
+    {
+      "query_type": "semantic",
+      "operation": "semantic_search",
+      "asset_types": [
+        "repository_readme"
+      ]
+    },
+    {
+      "query_type": "hybrid",
+      "operation": "model_context",
+      "asset_types": null
+    }
+  ]
+},
+{
+  "id": "q024",
+  "query": "Give me a summary of GenImage's evaluation setup.",
+  "acceptable_plans": [
+    {
+      "query_type": "hybrid",
+      "operation": "project_context",
+      "asset_types": null
+    },
+    {
+      "query_type": "semantic",
+      "operation": "semantic_search",
+      "asset_types": [
+        "evaluation_report"
+      ]
+    }
+  ]
+},
+  {
+    "id": "q025",
+    "query": "Which projects seem relevant to diffusion image detection?",
+    "expected_query_type": "semantic",
+    "expected_operation": "semantic_search",
+    "expected_entity_type": null,
+    "expected_target_entity_type": "project",
+    "expected_asset_types": null
+  },
+  {
+    "id": "q026",
+    "query": "Find work involving frequency-domain methods.",
+    "expected_query_type": "semantic",
+    "expected_operation": "semantic_search",
+    "expected_entity_type": null,
+    "expected_target_entity_type": null,
+    "expected_asset_types": null
+  },
+  {
+    "id": "q027",
+    "query": "Was CNNDetection successfully reproduced?",
+    "expected_query_type": "semantic",
+    "expected_operation": "semantic_search",
+    "expected_entity_type": "model",
+    "expected_target_entity_type": null,
+    "expected_asset_types": [
+      "reproducibility_report"
+    ]
+  },
+  {
+    "id": "q028",
+    "query": "What went wrong during deployment?",
+    "expected_query_type": "semantic",
+    "expected_operation": "semantic_search",
+    "expected_entity_type": null,
+    "expected_target_entity_type": null,
+    "expected_asset_types": [
+      "postmortem"
+    ]
+  },
+  {
+    "id": "q029",
+    "query": "What experiments were run for the pilot?",
+    "expected_query_type": "semantic",
+    "expected_operation": "semantic_search",
+    "expected_entity_type": null,
+    "expected_target_entity_type": null,
+    "expected_asset_types": [
+      "experiment_report"
+    ]
+  },
+  {
+    "id": "q030",
+    "query": "Where can I find setup instructions for MaskSim?",
+    "expected_query_type": "semantic",
+    "expected_operation": "semantic_search",
+    "expected_entity_type": null,
+    "expected_target_entity_type": null,
+    "expected_asset_types": [
+      "repository_readme"
+    ]
+  }
+]

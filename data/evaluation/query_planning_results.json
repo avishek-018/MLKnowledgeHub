@@ -1,0 +1,1486 @@
+{
+  "summary": {
+    "total_queries": 30,
+    "initial_routing_accuracy": 96.67,
+    "initial_execution_plan_accuracy": 90.0,
+    "initial_full_plan_accuracy": 73.33,
+    "final_routing_accuracy": 96.67,
+    "final_execution_plan_accuracy": 93.33,
+    "final_full_plan_accuracy": 76.67,
+    "planner_errors": 8,
+    "critic_detection_rate": 12.5,
+    "correct_plans_rejected_by_critic": 0,
+    "revisions_attempted": 1,
+    "successful_revisions": 1,
+    "revision_success_rate": 100.0
+  },
+  "results": [
+    {
+      "id": "q001",
+      "query": "How many projects do we have?",
+      "expected": {
+        "query_type": "metadata",
+        "operation": "count_projects",
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "initial_plan": {
+        "query_type": "metadata",
+        "operation": "count_projects",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": "project",
+        "asset_types": null
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": false,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan correctly uses authoritative metadata to count projects and selects the directly corresponding count_projects operation.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "metadata",
+        "operation": "count_projects",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": "project",
+        "asset_types": null
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": false,
+      "revision_success": false
+    },
+    {
+      "id": "q002",
+      "query": "Please list all projects.",
+      "expected": {
+        "query_type": "metadata",
+        "operation": "list_projects",
+        "entity_type": null,
+        "target_entity_type": "project",
+        "asset_types": null
+      },
+      "initial_plan": {
+        "query_type": "metadata",
+        "operation": "list_projects",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": "project",
+        "asset_types": null
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan correctly uses authoritative metadata and the list_projects operation to return all projects.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "metadata",
+        "operation": "list_projects",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": "project",
+        "asset_types": null
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q003",
+      "query": "How many model cards are registered?",
+      "expected": {
+        "query_type": "metadata",
+        "operation": "count_model_cards",
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "initial_plan": {
+        "query_type": "metadata",
+        "operation": "count_model_cards",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan correctly uses the metadata retrieval mode and count_model_cards operation to answer the authoritative catalog count question.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "metadata",
+        "operation": "count_model_cards",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q004",
+      "query": "What models belong to NYUAD?",
+      "expected": {
+        "query_type": "graph",
+        "operation": "project_models",
+        "entity_type": "project",
+        "target_entity_type": "model",
+        "asset_types": null
+      },
+      "initial_plan": {
+        "query_type": "graph",
+        "operation": "project_models",
+        "entity_mention": "NYUAD",
+        "entity_type": "project",
+        "target_entity_type": "model",
+        "asset_types": null
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan correctly treats NYUAD as a project and uses the graph relationship operation to retrieve its associated models.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "graph",
+        "operation": "project_models",
+        "entity_mention": "NYUAD",
+        "entity_type": "project",
+        "target_entity_type": "model",
+        "asset_types": null
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q005",
+      "query": "Which models are associated with the NYUAD project?",
+      "expected": {
+        "query_type": "graph",
+        "operation": "project_models",
+        "entity_type": "project",
+        "target_entity_type": "model",
+        "asset_types": null
+      },
+      "initial_plan": {
+        "query_type": "graph",
+        "operation": "project_models",
+        "entity_mention": "NYUAD project",
+        "entity_type": "project",
+        "target_entity_type": "model",
+        "asset_types": null
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan correctly uses the graph operation for retrieving models associated with a specified project. The entity and target types are consistent, and no asset filter is needed.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "graph",
+        "operation": "project_models",
+        "entity_mention": "NYUAD project",
+        "entity_type": "project",
+        "target_entity_type": "model",
+        "asset_types": null
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q006",
+      "query": "What data was the AI-generated images detector evaluated on?",
+      "expected": {
+        "query_type": "graph",
+        "operation": "model_datasets",
+        "entity_type": "model",
+        "target_entity_type": "dataset",
+        "asset_types": null
+      },
+      "initial_plan": {
+        "query_type": "graph",
+        "operation": "model_datasets",
+        "entity_mention": "AI-generated images detector",
+        "entity_type": "model",
+        "target_entity_type": "dataset",
+        "asset_types": null
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses the model-to-dataset graph relationship to identify datasets associated with the AI-generated images detector, including evaluation data.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "graph",
+        "operation": "model_datasets",
+        "entity_mention": "AI-generated images detector",
+        "entity_type": "model",
+        "target_entity_type": "dataset",
+        "asset_types": null
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q007",
+      "query": "What metrics are reported for the AI-generated images detector?",
+      "expected": {
+        "query_type": "graph",
+        "operation": "model_metrics",
+        "entity_type": "model",
+        "target_entity_type": "metric",
+        "asset_types": null
+      },
+      "initial_plan": {
+        "query_type": "graph",
+        "operation": "model_metrics",
+        "entity_mention": "AI-generated images detector",
+        "entity_type": "model",
+        "target_entity_type": "metric",
+        "asset_types": null
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan correctly uses the model_metrics graph operation to retrieve metrics reported for the specified model.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "graph",
+        "operation": "model_metrics",
+        "entity_mention": "AI-generated images detector",
+        "entity_type": "model",
+        "target_entity_type": "metric",
+        "asset_types": null
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q008",
+      "query": "Give me an overview of the NYUAD detector.",
+      "expected": {
+        "query_type": "hybrid",
+        "operation": "model_context",
+        "entity_type": "model",
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "initial_plan": {
+        "query_type": "hybrid",
+        "operation": "model_context",
+        "entity_mention": "NYUAD detector",
+        "entity_type": "model",
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses hybrid model context retrieval for an overview of the specified model.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "hybrid",
+        "operation": "model_context",
+        "entity_mention": "NYUAD detector",
+        "entity_type": "model",
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q009",
+      "query": "What do we know about GenImage as a project?",
+      "expected": {
+        "query_type": "hybrid",
+        "operation": "project_context",
+        "entity_type": "project",
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "initial_plan": {
+        "query_type": "hybrid",
+        "operation": "project_context",
+        "entity_mention": "GenImage",
+        "entity_type": "project",
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses hybrid project context retrieval for a broad summary of the GenImage project.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "hybrid",
+        "operation": "project_context",
+        "entity_mention": "GenImage",
+        "entity_type": "project",
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q010",
+      "query": "Summarize the NYUAD AI image detector.",
+      "expected": {
+        "query_type": "hybrid",
+        "operation": "model_context",
+        "entity_type": "model",
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "initial_plan": {
+        "query_type": "hybrid",
+        "operation": "model_context",
+        "entity_mention": "NYUAD AI image detector",
+        "entity_type": "model",
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately treats the detector as a model and uses hybrid model context retrieval for a broad summary.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "hybrid",
+        "operation": "model_context",
+        "entity_mention": "NYUAD AI image detector",
+        "entity_type": "model",
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q011",
+      "query": "Which model cards describe AI image detectors?",
+      "expected": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "model_card"
+        ]
+      },
+      "initial_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "model_card"
+        ]
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses semantic search restricted to model cards to identify cards describing AI image detectors.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "model_card"
+        ]
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q012",
+      "query": "Do any model cards discuss fraud detection?",
+      "expected": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "model_card"
+        ]
+      },
+      "initial_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "model_card"
+        ]
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses semantic retrieval with a model_card filter to find whether model cards discuss fraud detection.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "model_card"
+        ]
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q013",
+      "query": "Do we have evidence that the CNN detector was reproduced?",
+      "expected": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_type": "model",
+        "target_entity_type": null,
+        "asset_types": [
+          "reproducibility_report"
+        ]
+      },
+      "initial_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": "CNN detector",
+        "entity_type": "model",
+        "target_entity_type": null,
+        "asset_types": [
+          "reproducibility_report"
+        ]
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses semantic retrieval focused on reproducibility reports to find evidence about whether the CNN detector was reproduced.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": "CNN detector",
+        "entity_type": "model",
+        "target_entity_type": null,
+        "asset_types": [
+          "reproducibility_report"
+        ]
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q014",
+      "query": "What happened during the synthetic-image deployment incident?",
+      "expected": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "postmortem"
+        ]
+      },
+      "initial_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": "synthetic-image deployment incident",
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "postmortem"
+        ]
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses semantic retrieval restricted to postmortems for a narrow incident-details question.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": "synthetic-image deployment incident",
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "postmortem"
+        ]
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q015",
+      "query": "What did the evaluation documents conclude about the pilot?",
+      "expected": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "evaluation_report"
+        ]
+      },
+      "initial_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": "pilot",
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "evaluation_report"
+        ]
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses semantic retrieval with an evaluation_report filter to find document conclusions about the pilot.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": "pilot",
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "evaluation_report"
+        ]
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q016",
+      "query": "Describe the experimental findings for the pilot.",
+      "expected": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_type": "experiment",
+        "target_entity_type": null,
+        "asset_types": [
+          "experiment_report"
+        ]
+      },
+      "initial_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": "pilot",
+        "entity_type": "project",
+        "target_entity_type": null,
+        "asset_types": [
+          "experiment_report"
+        ]
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": false,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses semantic retrieval filtered to experiment reports for a narrow request about experimental findings, with the pilot represented as a project.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": "pilot",
+        "entity_type": "project",
+        "target_entity_type": null,
+        "asset_types": [
+          "experiment_report"
+        ]
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": false,
+      "revision_success": false
+    },
+    {
+      "id": "q017",
+      "query": "What implementation guidance is available for DIRE?",
+      "expected": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "repository_readme"
+        ]
+      },
+      "initial_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": "DIRE",
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "repository_readme"
+        ]
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses semantic retrieval for a narrow implementation-guidance question and restricts evidence to repository README content, where implementation instructions are most likely to appear.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": "DIRE",
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "repository_readme"
+        ]
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q018",
+      "query": "Which projects are related to diffusion-generated images?",
+      "expected": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_type": null,
+        "target_entity_type": "project",
+        "asset_types": null
+      },
+      "initial_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": "project",
+        "asset_types": null
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses semantic search to discover projects related to the broad concept of diffusion-generated images.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": "project",
+        "asset_types": null
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q019",
+      "query": "Find projects concerned with detecting synthetic images.",
+      "expected": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_type": null,
+        "target_entity_type": "project",
+        "asset_types": null
+      },
+      "initial_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": "project",
+        "asset_types": null
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses semantic search to discover projects based on their subject matter and returns projects without imposing an unnecessary asset filter.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": "project",
+        "asset_types": null
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q020",
+      "query": "What do the papers say about generalization across image generators?",
+      "expected": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "paper"
+        ]
+      },
+      "initial_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "paper"
+        ]
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses semantic retrieval restricted to papers, which directly supports a document-content question about findings on generalization across image generators.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "paper"
+        ]
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q021",
+      "query": "What information do we have about the datasets behind the NYUAD detector?",
+      "expected": {
+        "query_type": "graph",
+        "operation": "model_datasets",
+        "entity_type": "model",
+        "target_entity_type": "dataset",
+        "asset_types": null
+      },
+      "initial_plan": {
+        "query_type": "hybrid",
+        "operation": "model_context",
+        "entity_mention": "NYUAD detector",
+        "entity_type": "model",
+        "target_entity_type": "dataset",
+        "asset_types": [
+          "dataset_card",
+          "dataset_metadata"
+        ]
+      },
+      "initial_routing_correct": false,
+      "initial_execution_plan_correct": false,
+      "initial_full_plan_correct": false,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses hybrid retrieval to identify datasets associated with the NYUAD detector and provide supporting information from dataset-specific artifacts.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "hybrid",
+        "operation": "model_context",
+        "entity_mention": "NYUAD detector",
+        "entity_type": "model",
+        "target_entity_type": "dataset",
+        "asset_types": [
+          "dataset_card",
+          "dataset_metadata"
+        ]
+      },
+      "final_routing_correct": false,
+      "final_execution_plan_correct": false,
+      "final_full_plan_correct": false,
+      "revision_success": false
+    },
+    {
+      "id": "q022",
+      "query": "Show me what NYUAD uses for evaluation.",
+      "expected": {
+        "acceptable_plans": [
+          {
+            "query_type": "semantic",
+            "operation": "semantic_search",
+            "asset_types": [
+              "evaluation_report"
+            ]
+          },
+          {
+            "query_type": "hybrid",
+            "operation": "project_context",
+            "asset_types": null
+          }
+        ]
+      },
+      "initial_plan": {
+        "query_type": "hybrid",
+        "operation": "project_context",
+        "entity_mention": "NYUAD",
+        "entity_type": "project",
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately treats NYUAD as a project and uses hybrid project context to retrieve what it uses for evaluation, including structured relationships and supporting evidence.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "hybrid",
+        "operation": "project_context",
+        "entity_mention": "NYUAD",
+        "entity_type": "project",
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q023",
+      "query": "What can you tell me about DIRE and how it is implemented?",
+      "expected": {
+        "acceptable_plans": [
+          {
+            "query_type": "semantic",
+            "operation": "semantic_search",
+            "asset_types": [
+              "repository_readme"
+            ]
+          },
+          {
+            "query_type": "hybrid",
+            "operation": "model_context",
+            "asset_types": null
+          }
+        ]
+      },
+      "initial_plan": {
+        "query_type": "hybrid",
+        "operation": "model_context",
+        "entity_mention": "DIRE",
+        "entity_type": "model",
+        "target_entity_type": null,
+        "asset_types": [
+          "repository_readme",
+          "model_card"
+        ]
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": false,
+      "initial_full_plan_correct": false,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately treats DIRE as a model and uses hybrid model context for a broad overview plus implementation details. Repository README and model card evidence are relevant artifact filters.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "hybrid",
+        "operation": "model_context",
+        "entity_mention": "DIRE",
+        "entity_type": "model",
+        "target_entity_type": null,
+        "asset_types": [
+          "repository_readme",
+          "model_card"
+        ]
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": false,
+      "final_full_plan_correct": false,
+      "revision_success": false
+    },
+    {
+      "id": "q024",
+      "query": "Give me a summary of GenImage's evaluation setup.",
+      "expected": {
+        "acceptable_plans": [
+          {
+            "query_type": "hybrid",
+            "operation": "project_context",
+            "asset_types": null
+          },
+          {
+            "query_type": "semantic",
+            "operation": "semantic_search",
+            "asset_types": [
+              "evaluation_report"
+            ]
+          }
+        ]
+      },
+      "initial_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": "GenImage",
+        "entity_type": "project",
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": false,
+      "initial_full_plan_correct": false,
+      "evaluation": {
+        "valid": false,
+        "feedback": "The retrieval mode and operation are appropriate, but the plan should restrict evidence to evaluation reports because the question specifically asks about an evaluation setup.",
+        "issues": [
+          "asset_types is unspecified for a narrow evaluation-evidence question."
+        ],
+        "suggested_query_type": "semantic",
+        "suggested_operation": "semantic_search",
+        "suggested_entity_type": "project",
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": [
+          "evaluation_report"
+        ]
+      },
+      "revised": true,
+      "final_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": "GenImage",
+        "entity_type": "project",
+        "target_entity_type": null,
+        "asset_types": [
+          "evaluation_report"
+        ]
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": true
+    },
+    {
+      "id": "q025",
+      "query": "Which projects seem relevant to diffusion image detection?",
+      "expected": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_type": null,
+        "target_entity_type": "project",
+        "asset_types": null
+      },
+      "initial_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": false,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses semantic search for discovering projects relevant to a broad topic without a specific entity or artifact constraint.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": false,
+      "revision_success": false
+    },
+    {
+      "id": "q026",
+      "query": "Find work involving frequency-domain methods.",
+      "expected": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "initial_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses semantic search for a broad evidence-discovery request without a specific entity or artifact type.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": null
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q027",
+      "query": "Was CNNDetection successfully reproduced?",
+      "expected": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_type": "model",
+        "target_entity_type": null,
+        "asset_types": [
+          "reproducibility_report"
+        ]
+      },
+      "initial_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": "CNNDetection",
+        "entity_type": "model",
+        "target_entity_type": null,
+        "asset_types": [
+          "reproducibility_report"
+        ]
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses semantic retrieval filtered to reproducibility reports for a narrow reproduction-evidence question about CNNDetection.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": "CNNDetection",
+        "entity_type": "model",
+        "target_entity_type": null,
+        "asset_types": [
+          "reproducibility_report"
+        ]
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q028",
+      "query": "What went wrong during deployment?",
+      "expected": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "postmortem"
+        ]
+      },
+      "initial_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "postmortem"
+        ]
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": true,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses semantic retrieval with a postmortem filter for a deployment-incident question without a specified entity.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": null,
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "postmortem"
+        ]
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": true,
+      "revision_success": false
+    },
+    {
+      "id": "q029",
+      "query": "What experiments were run for the pilot?",
+      "expected": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "experiment_report"
+        ]
+      },
+      "initial_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": "pilot",
+        "entity_type": "project",
+        "target_entity_type": "experiment",
+        "asset_types": [
+          "experiment_report"
+        ]
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": false,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses semantic retrieval over experiment reports to find evidence about experiments conducted for the pilot project.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": "pilot",
+        "entity_type": "project",
+        "target_entity_type": "experiment",
+        "asset_types": [
+          "experiment_report"
+        ]
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": false,
+      "revision_success": false
+    },
+    {
+      "id": "q030",
+      "query": "Where can I find setup instructions for MaskSim?",
+      "expected": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_type": null,
+        "target_entity_type": null,
+        "asset_types": [
+          "repository_readme"
+        ]
+      },
+      "initial_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": "MaskSim",
+        "entity_type": "repository",
+        "target_entity_type": null,
+        "asset_types": [
+          "repository_readme"
+        ]
+      },
+      "initial_routing_correct": true,
+      "initial_execution_plan_correct": true,
+      "initial_full_plan_correct": false,
+      "evaluation": {
+        "valid": true,
+        "feedback": "The plan appropriately uses semantic retrieval over repository README content to find setup instructions for MaskSim.",
+        "issues": [],
+        "suggested_query_type": null,
+        "suggested_operation": null,
+        "suggested_entity_type": null,
+        "suggested_target_entity_type": null,
+        "suggested_asset_types": null
+      },
+      "revised": false,
+      "final_plan": {
+        "query_type": "semantic",
+        "operation": "semantic_search",
+        "entity_mention": "MaskSim",
+        "entity_type": "repository",
+        "target_entity_type": null,
+        "asset_types": [
+          "repository_readme"
+        ]
+      },
+      "final_routing_correct": true,
+      "final_execution_plan_correct": true,
+      "final_full_plan_correct": false,
+      "revision_success": false
+    }
+  ]
+}
