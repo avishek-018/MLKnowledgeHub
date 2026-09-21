@@ -1,4 +1,4 @@
-"""Search the vector store using a sample PDF query."""
+"""Demonstrate semantic search over a sample PDF."""
 
 
 from pathlib import Path

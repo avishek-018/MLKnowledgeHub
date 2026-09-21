@@ -1,3 +1,5 @@
+"""Run an interactive demonstration of the knowledge assistant."""
+
 from pathlib import Path
 
 from dotenv import load_dotenv
