@@ -1,0 +1,92 @@
+[
+  {
+    "id": "a001",
+    "query": "What do we know about GenImage?",
+    "expected_project_ids": ["genimage"],
+    "expected_asset_types": ["paper", "repository_readme"],
+    "required_facts": [
+      "over one million",
+      "ImageNet"
+    ]
+  },
+  {
+    "id": "a002",
+    "query": "What is SynthBuster?",
+    "expected_project_ids": ["synthbuster"],
+    "expected_asset_types": ["paper", "repository_readme"],
+    "required_facts": [
+      "diffusion",
+      "frequency"
+    ]
+  },
+  {
+    "id": "a003",
+    "query": "What is MaskSim used for?",
+    "expected_project_ids": ["masksim"],
+    "expected_asset_types": ["paper", "repository_readme"],
+    "required_facts": [
+      "synthetic",
+      "spectrum"
+    ]
+  },
+  {
+    "id": "a004",
+    "query": "What do we know about UniversalFakeDetect?",
+    "expected_project_ids": ["universal_fake_detect"],
+    "expected_asset_types": ["paper", "repository_readme"],
+    "required_facts": [
+      "generalize",
+      "generative models"
+    ]
+  },
+  {
+    "id": "a005",
+    "query": "What does the DIRE project do?",
+    "expected_project_ids": ["dire"],
+    "expected_asset_types": ["paper", "repository_readme"],
+    "required_facts": [
+      "diffusion",
+      "reconstruction"
+    ]
+  },
+  {
+    "id": "a006",
+    "query": "What model is associated with the NYUAD AI image detector project?",
+    "expected_project_ids": ["nyuad_ai_image_detector"],
+    "expected_asset_types": [],
+    "required_facts": [
+      "AI-generated"
+    ]
+  },
+  {
+    "id": "a007",
+    "query": "What evaluation information is available for the NYUAD project?",
+    "expected_project_ids": ["nyuad_ai_image_detector"],
+    "expected_asset_types": ["evaluation_report"],
+    "required_facts": []
+  },
+  {
+    "id": "a008",
+    "query": "What implementation information is available for DIRE?",
+    "expected_project_ids": ["dire"],
+    "expected_asset_types": ["repository_readme"],
+    "required_facts": []
+  },
+  {
+    "id": "a009",
+    "query": "What dataset information is available for GenImage?",
+    "expected_project_ids": ["genimage"],
+    "expected_asset_types": ["paper", "repository_readme"],
+    "required_facts": [
+      "dataset",
+      "million"
+    ]
+  },
+  {
+    "id": "a010",
+    "query": "What evidence do we have about reproducing CNN-based fake image detection?",
+    "expected_project_ids": ["cnn_detection_reproduction"],
+    "expected_asset_types": ["reproducibility_report"],
+    "required_facts": []
+  }
+]

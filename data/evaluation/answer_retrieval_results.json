@@ -1,0 +1,323 @@
+{
+  "summary": {
+    "total_queries": 10,
+    "passed_queries": 5,
+    "overall_pass_rate": 50.0,
+    "project_evaluable_queries": 9,
+    "project_retrieval_accuracy": 44.44,
+    "asset_type_retrieval_accuracy": 60.0,
+    "required_fact_accuracy": 70.0,
+    "source_coverage": 80.0
+  },
+  "results": [
+    {
+      "id": "a001",
+      "query": "What do we know about GenImage?",
+      "result_type": "semantic",
+      "expected_project_ids": [
+        "genimage"
+      ],
+      "retrieved_project_ids": [
+        "cnn_detection",
+        "dm_image_detection",
+        "genimage",
+        "universal_fake_detect"
+      ],
+      "project_match": true,
+      "expected_asset_types": [
+        "paper",
+        "repository_readme"
+      ],
+      "retrieved_asset_types": [
+        "paper",
+        "repository_readme"
+      ],
+      "asset_type_match": true,
+      "required_facts": [
+        "over one million",
+        "imagenet"
+      ],
+      "fact_results": {
+        "over one million": true,
+        "imagenet": true
+      },
+      "facts_match": true,
+      "has_sources": true,
+      "passed": true,
+      "answer_preview": "genimage is a public benchmark and dataset for detecting ai-generated images.\n\n- **scale:** it contains **over one million pairs** of ai-generated (“fake”) images and collected real images. [s1][s2]\n- **content:** it covers a broad range of image content using the **1,000 classes of imagenet**. [s1]\n- **generators:** the images include outputs from advanced **diffusion models and gans**; the readme also names midjourney among the generators, though the supplied excerpt is truncated. [s1][s2]\n- *"
+    },
+    {
+      "id": "a002",
+      "query": "What is SynthBuster?",
+      "result_type": "hybrid",
+      "expected_project_ids": [
+        "synthbuster"
+      ],
+      "retrieved_project_ids": [
+        "synthetic_image_detection_pilot"
+      ],
+      "project_match": false,
+      "expected_asset_types": [
+        "paper",
+        "repository_readme"
+      ],
+      "retrieved_asset_types": [
+        "deployment_notes",
+        "evaluation_report",
+        "experiment_report",
+        "postmortem",
+        "project_brief"
+      ],
+      "asset_type_match": false,
+      "required_facts": [
+        "diffusion",
+        "frequency"
+      ],
+      "fact_results": {
+        "diffusion": false,
+        "frequency": true
+      },
+      "facts_match": false,
+      "has_sources": true,
+      "passed": false,
+      "answer_preview": "synthbuster is the model entity identified as `model__synthbuster`, associated in the knowledge graph with the **synthetic image detection pilot**.\n\nthe available project evidence indicates that synthbuster was considered as a candidate in a **frequency-based approach** for detecting potentially synthetic images [s1]. however, the supplied documents do not provide a formal model description, implementation details, datasets, metrics, or completed results. the pilot documents are simulated/templa"
+    },
+    {
+      "id": "a003",
+      "query": "What is MaskSim used for?",
+      "result_type": "hybrid",
+      "expected_project_ids": [
+        "masksim"
+      ],
+      "retrieved_project_ids": [
+        "masksim",
+        "synthetic_image_detection_pilot"
+      ],
+      "project_match": true,
+      "expected_asset_types": [
+        "paper",
+        "repository_readme"
+      ],
+      "retrieved_asset_types": [
+        "deployment_notes",
+        "experiment_report",
+        "paper",
+        "project_brief",
+        "repository_readme"
+      ],
+      "asset_type_match": true,
+      "required_facts": [
+        "synthetic",
+        "spectrum"
+      ],
+      "fact_results": {
+        "synthetic": true,
+        "spectrum": true
+      },
+      "facts_match": true,
+      "has_sources": true,
+      "passed": true,
+      "answer_preview": "masksim is used to **detect synthetic (ai-generated) images** through masked spectrum similarity analysis. it learns:\n\n- a mask emphasizing the most discriminative frequency components, and\n- a reference spectral pattern associated with a given generative method.\n\nthis exposes anomalous spectral patterns and provides relatively explainable forensic evidence for the detection decision [s1]. the knowledge graph associates masksim with the `masksim` project; the separate enterprise pilot documents "
+    },
+    {
+      "id": "a004",
+      "query": "What do we know about UniversalFakeDetect?",
+      "result_type": "hybrid",
+      "expected_project_ids": [
+        "universal_fake_detect"
+      ],
+      "retrieved_project_ids": [
+        "synthetic_image_detection_pilot"
+      ],
+      "project_match": false,
+      "expected_asset_types": [
+        "paper",
+        "repository_readme"
+      ],
+      "retrieved_asset_types": [
+        "deployment_notes",
+        "evaluation_report",
+        "experiment_report",
+        "postmortem",
+        "project_brief"
+      ],
+      "asset_type_match": false,
+      "required_facts": [
+        "generalize",
+        "generative models"
+      ],
+      "fact_results": {
+        "generalize": false,
+        "generative models": false
+      },
+      "facts_match": false,
+      "has_sources": true,
+      "passed": false,
+      "answer_preview": "universalfakedetect is a model entity associated with the **synthetic image detection pilot** project.\n\nwhat the evidence supports:\n\n- it was listed as a **candidate project asset** alongside other detection approaches. [s3]\n- in the pilot’s planned baseline comparison, it represents a **pretrained feature classifier** using **semantic feature-space separation**. [s2]\n- the project documentation is explicitly a **simulated/demo enterprise document** with illustrative content, so it should not be"
+    },
+    {
+      "id": "a005",
+      "query": "What does the DIRE project do?",
+      "result_type": "hybrid",
+      "expected_project_ids": [
+        "dire"
+      ],
+      "retrieved_project_ids": [
+        "dire"
+      ],
+      "project_match": true,
+      "expected_asset_types": [
+        "paper",
+        "repository_readme"
+      ],
+      "retrieved_asset_types": [
+        "paper",
+        "repository_readme"
+      ],
+      "asset_type_match": true,
+      "required_facts": [
+        "diffusion",
+        "reconstruction"
+      ],
+      "fact_results": {
+        "diffusion": true,
+        "reconstruction": true
+      },
+      "facts_match": true,
+      "has_sources": true,
+      "passed": true,
+      "answer_preview": "the **dire project** detects diffusion-generated images. it computes a **diffusion reconstruction error (dire) representation** by reconstructing an image with a diffusion model and measuring the reconstruction error, then uses that representation with a **binary classifier** to distinguish real images from diffusion-generated images.\n\nthe underlying observation is that diffusion-generated images can be approximately reconstructed by a diffusion model, whereas real images generally cannot; conse"
+    },
+    {
+      "id": "a006",
+      "query": "What model is associated with the NYUAD AI image detector project?",
+      "result_type": "graph",
+      "expected_project_ids": [
+        "nyuad_ai_image_detector"
+      ],
+      "retrieved_project_ids": [],
+      "project_match": null,
+      "expected_asset_types": [],
+      "retrieved_asset_types": [],
+      "asset_type_match": true,
+      "required_facts": [
+        "ai-generated"
+      ],
+      "fact_results": {
+        "ai-generated": true
+      },
+      "facts_match": true,
+      "has_sources": false,
+      "passed": true,
+      "answer_preview": "[{\"entity_id\": \"ai_generated_images_detector\", \"name\": \"ai-generated_images_detector\", \"description\": \"image classification model for detecting ai-generated images.\"}]"
+    },
+    {
+      "id": "a007",
+      "query": "What evaluation information is available for the NYUAD project?",
+      "result_type": "semantic",
+      "expected_project_ids": [
+        "nyuad_ai_image_detector"
+      ],
+      "retrieved_project_ids": [
+        "cnn_detection_reproduction",
+        "synthetic_image_detection_pilot"
+      ],
+      "project_match": false,
+      "expected_asset_types": [
+        "evaluation_report"
+      ],
+      "retrieved_asset_types": [
+        "evaluation_report"
+      ],
+      "asset_type_match": true,
+      "required_facts": [],
+      "fact_results": {},
+      "facts_match": true,
+      "has_sources": true,
+      "passed": false,
+      "answer_preview": "the supplied evidence does not identify a project named “nyuad,” so it is insufficient to provide project-specific evaluation information.\n\nthe closest available evaluation document is for `synthetic_image_detection_pilot`. it is explicitly a simulated template with **no real evaluation results**; all listed metrics—including balanced accuracy, auroc, false-positive rate, and false-negative rate across several slices—are marked **“pending.”** [s1]\n\na separate evaluation report concerns `cnn_dete"
+    },
+    {
+      "id": "a008",
+      "query": "What implementation information is available for DIRE?",
+      "result_type": "semantic",
+      "expected_project_ids": [
+        "dire"
+      ],
+      "retrieved_project_ids": [
+        "cnn_detection",
+        "dire",
+        "genimage",
+        "masksim",
+        "universal_fake_detect"
+      ],
+      "project_match": true,
+      "expected_asset_types": [
+        "repository_readme"
+      ],
+      "retrieved_asset_types": [
+        "repository_readme"
+      ],
+      "asset_type_match": true,
+      "required_facts": [],
+      "fact_results": {},
+      "facts_match": true,
+      "has_sources": true,
+      "passed": true,
+      "answer_preview": "available implementation information for dire includes:\n\n- **data layout:** link real images into `data/train/lsun_adm/0_real` and dire images of adm-lsun-bedroom into `data/train/lsun_adm/1_fake`. apply the analogous structure under `data/val` and `data/test` for validation and testing. [s2]\n- **training:** run:\n  ```bash\n  sh train.sh\n  ```\n  [s2]\n- **pretrained model:** a pretrained dire model is provided through baidudrive and recdrive; both use the password `dire`. [s2]\n- **evaluation:** ru"
+    },
+    {
+      "id": "a009",
+      "query": "What dataset information is available for GenImage?",
+      "result_type": "semantic",
+      "expected_project_ids": [
+        "genimage"
+      ],
+      "retrieved_project_ids": [
+        "ai_generated_vs_real_dataset"
+      ],
+      "project_match": false,
+      "expected_asset_types": [
+        "paper",
+        "repository_readme"
+      ],
+      "retrieved_asset_types": [
+        "dataset_card"
+      ],
+      "asset_type_match": false,
+      "required_facts": [
+        "dataset",
+        "million"
+      ],
+      "fact_results": {
+        "dataset": true,
+        "million": false
+      },
+      "facts_match": false,
+      "has_sources": true,
+      "passed": false,
+      "answer_preview": "available dataset information for **genimage** is limited to the supplied dataset card:\n\n- **dataset/project:** “ai-generated images versus real images dataset” / `ai_generated_vs_real_dataset` [s1]\n- **license:** mit [s1]\n- **feature:** `image_path` with string type [s1]\n- **split:** `train`, containing **30,072 examples** and **3,240,528 bytes** [s1]\n- **download size:** **796,175 bytes** [s1]\n- **dataset size:** **3,240,528 bytes** [s1]\n- **configuration:** `default`, using files matching `da"
+    },
+    {
+      "id": "a010",
+      "query": "What evidence do we have about reproducing CNN-based fake image detection?",
+      "result_type": "semantic",
+      "expected_project_ids": [
+        "cnn_detection_reproduction"
+      ],
+      "retrieved_project_ids": [],
+      "project_match": false,
+      "expected_asset_types": [
+        "reproducibility_report"
+      ],
+      "retrieved_asset_types": [],
+      "asset_type_match": false,
+      "required_facts": [],
+      "fact_results": {},
+      "facts_match": true,
+      "has_sources": false,
+      "passed": false,
+      "answer_preview": "i could not find enough evidence in the knowledge base to answer this question."
+    }
+  ]
+}

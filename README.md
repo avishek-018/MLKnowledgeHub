@@ -1,132 +1,346 @@
 # ML Knowledge Hub
 
-**An ML project knowledge assistant for discovering, understanding, comparing, and reusing existing machine-learning assets.**
+**An agentic hybrid GraphRAG platform for discovering, understanding, and reusing machine-learning knowledge across projects.**
 
-ML Knowledge Hub aims to help ML engineers, data scientists, and applied scientists find useful knowledge across project documentation, experiment reports, model cards, dataset descriptions, repositories, and research papers. It combines semantic search with a planned Retrieval-Augmented Generation (RAG) pipeline, knowledge graph, and Model Context Protocol (MCP) interface.
+ML Knowledge Hub is a knowledge-management system for ML teams. It helps engineers, data scientists, and applied scientists discover information across project documentation, experiment reports, model cards, dataset descriptions, repositories, research papers, and other technical artifacts.
 
-The current prototype supports PDF ingestion, embedding generation, and semantic retrieval. Grounded answer generation, graph-based retrieval, and MCP access are upcoming milestones.
+The system combines:
+
+- metadata lookup
+- semantic retrieval with Qdrant
+- knowledge-graph reasoning with Neo4j
+- hybrid GraphRAG
+- grounded answer generation with source references
+- agentic query planning with planner–critic–revision orchestration
+- MCP access for external AI clients
+
+---
 
 ## Motivation
 
-An ML project produces more than a trained model. It also produces information about the problem, data, experiments, evaluation results, implementation decisions, and known limitations. When this knowledge is scattered across documents and repositories, teams can struggle to identify relevant previous work and decide what to reuse.
+ML projects produce much more than trained models. They also generate:
 
-ML Knowledge Hub is designed to make that project knowledge searchable and connect related assets, so a team can answer questions such as:
+- design decisions
+- datasets
+- evaluation results
+- experiments
+- implementation notes
+- model cards
+- deployment documentation
+- failure analyses
+- research references
+
+When this knowledge is scattered across repositories and documents, teams often repeat work or struggle to identify reusable assets.
+
+ML Knowledge Hub organizes these artifacts into a searchable knowledge layer so users can ask questions such as:
 
 - Have we worked on a similar problem before?
-- Which models and datasets were used, and where is the implementation?
-- What experiments were tried, and what limitations were reported?
-- Which existing assets could provide a starting point for a new project?
+- Which models and datasets were used in a project?
+- What evaluation evidence exists for a model?
+- Which projects used diffusion-based methods?
+- Where is the implementation for a particular approach?
+- What limitations or deployment issues were reported?
+- Which existing assets could be reused for a new project?
+
+---
 
 ## Example Company Use Case
 
-An ML engineer joins a team developing a synthetic-image detection system. Earlier projects have produced evaluation reports, dataset documentation, model cards, and repository READMEs. The engineer needs to understand the previous work before choosing a baseline.
+Suppose an ML team is building a synthetic-image detection system.
 
-The intended workflow is to ask:
+Earlier teams have already produced:
 
-> Which previous image-detection projects evaluated diffusion-generated images? Show their models, datasets, reported results, limitations, and implementation links.
+- research experiments
+- model cards
+- repository documentation
+- evaluation reports
+- dataset documentation
+- deployment notes
 
-The assistant would retrieve supporting passages, follow relationships between projects and assets, and produce an answer with source references. Comparisons should preserve evaluation context, such as dataset, split, and metric, and identify missing evidence.
+A new engineer can ask:
 
-This is a target workflow; the current prototype provides semantic retrieval over ingested PDFs.
+> Which previous projects evaluated diffusion-generated images, and what models, datasets, results, and implementation resources are available?
 
-## Project Knowledge and Assets
+ML Knowledge Hub can combine structured graph relationships with retrieved document evidence and return a grounded response with source references.
 
-The intended knowledge sources include:
+---
 
-| Artifact | Knowledge it contributes |
-| --- | --- |
-| Project overview or technical design document | Problem, objectives, approach, and design decisions |
-| Experiment report | Methods tried, configurations, observations, and unsuccessful approaches |
-| Evaluation report | Metrics, benchmarks, comparisons, and failure cases |
-| Model card | Model purpose, intended use, evaluation, and limitations |
-| Dataset card or description | Data source, labels, preprocessing, splits, and constraints |
-| Repository README | Implementation location, setup, dependencies, and usage |
-| Deployment or maintenance notes | Operating requirements and known issues |
-| Research paper | Supporting methods, external baselines, and published evidence |
-
-These describe the planned scope. Ingestion currently supports PDFs; additional document formats and source integrations remain future work. Model weights and raw training datasets are represented through their descriptions and references rather than treated as text documents.
-
-## Initial Demo Corpus
-
-The initial corpus uses research papers on synthetic-image detection to develop and check the retrieval pipeline with public material. Papers provide descriptions of models, datasets, methods, metrics, and limitations that can later be linked in a knowledge graph.
-
-The broader application is ML project knowledge discovery and reuse. A future demo can extend the corpus with public model cards, dataset cards, repository documentation, and clearly labeled sample project reports.
-
-## Current Status
-
-The project is in early development.
-
-Implemented so far:
-
-- Python project structure and ML asset schema
-- PDF text extraction and document chunking
-- End-to-end PDF ingestion pipeline
-- Embedding generation with sentence-transformers
-- In-memory Qdrant vector search
-- Initial manual relevance checks using real research papers
-- Unit tests with pytest
-
-The current search prototype retrieves relevant passages. It does not yet generate grounded answers or perform graph-based retrieval. In-memory storage is intended for local development; persistent indexing remains a future step.
-
-## Planned Architecture
+## Architecture
 
 ```mermaid
 flowchart TD
-    A[Project documents and asset descriptions] --> B[Ingestion and chunking]
-    B --> C[Embedding generation]
-    C --> D[Vector index]
-    B --> E[Entity and relationship extraction]
-    E --> F[Knowledge graph]
-    Q[User question] --> R[Hybrid retrieval]
-    D --> R
-    F --> R
-    R --> G[Grounded answer generation]
-    G --> H[Answer with source references]
-    M[MCP clients] --> S[MCP server]
-    S --> R
+
+    A[ML Project Artifacts] --> B[Ingestion and Parsing]
+
+    B --> C[Chunking]
+    C --> D[Embedding Generation]
+    D --> E[Qdrant Vector Store]
+
+    B --> F[Entity and Relationship Extraction]
+    F --> G[Neo4j Knowledge Graph]
+
+    Q[User Query] --> P[Planner Agent]
+    P --> C1[Evaluator / Critic Agent]
+    C1 -->|Valid| R[Query Router]
+    C1 -->|Needs Revision| V[Revision Agent]
+    V --> R
+
+    R --> M[Metadata Retrieval]
+    R --> S[Semantic Retrieval]
+    R --> K[Graph Retrieval]
+    R --> H[Hybrid GraphRAG]
+
+    M --> A1[Knowledge Assistant]
+    S --> A1
+    K --> A1
+    H --> A1
+
+    A1 --> G1[Grounded Answer + Sources]
+
+    X[MCP Client] --> Y[MCP Server]
+    Y --> A1
 ```
 
-- **Semantic retrieval:** Find relevant passages even when question wording differs from the source.
-- **Knowledge graph:** Connect projects, models, datasets, experiments, papers, and repositories through explicit relationships.
-- **Hybrid GraphRAG:** Combine passage retrieval with graph traversal to answer questions spanning related assets.
-- **Grounded generation:** Build answers from retrieved evidence and include source references.
-- **MCP access:** Expose retrieval and asset lookup as tools for compatible AI clients.
-- **Guardrails:** Plan for evidence checks, insufficient-evidence responses, and treating retrieved content as untrusted input.
+---
+
+## Core Capabilities
+
+### Agentic Query Planning
+
+User queries are translated into structured execution plans using a planner agent.
+
+A critic agent validates the plan before execution. If needed, a revision agent produces a corrected plan.
+
+```text
+User Query
+    ↓
+Planner Agent
+    ↓
+Initial Plan
+    ↓
+Evaluator / Critic
+    ↓
+Revision Agent if needed
+    ↓
+Final Plan
+    ↓
+Query Router
+```
+
+Supported query modes include:
+
+- metadata
+- semantic
+- graph
+- hybrid
+
+### Semantic Retrieval
+
+Documents are embedded using `sentence-transformers/all-MiniLM-L6-v2` and stored in a persistent Qdrant vector index.
+
+Semantic retrieval supports filtering by:
+
+- project ID
+- artifact type
+
+This enables project-scoped and artifact-specific retrieval.
+
+### Knowledge Graph
+
+Structured relationships between ML assets are stored in Neo4j.
+
+The graph connects entities such as:
+
+- projects
+- models
+- datasets
+- metrics
+- repositories
+- experiments
+- technical artifacts
+
+Example graph queries include:
+
+- models used by a project
+- datasets associated with a model
+- metrics reported for a model
+- model-level context
+- project-level context
+
+### Hybrid GraphRAG
+
+Hybrid retrieval combines:
+
+1. structured knowledge from Neo4j
+2. supporting passages from Qdrant
+3. LLM-based grounded answer generation
+
+This allows the system to answer broader questions that require both relationship reasoning and document evidence.
+
+### Grounded Answer Generation
+
+Generated responses include supporting source metadata such as:
+
+- source ID
+- project ID
+- artifact type
+- document ID
+- title
+- source URL
+
+The generation layer is designed to avoid introducing claims that are unsupported by retrieved evidence.
+
+### MCP Interface
+
+ML Knowledge Hub exposes its capabilities through a Model Context Protocol server.
+
+Current MCP tools include:
+
+- `health_check`
+- `list_projects`
+- `count_projects`
+- `search_knowledge`
+- `warm_up`
+
+The MCP layer acts as a thin adapter around the existing `KnowledgeAssistant` rather than implementing separate retrieval logic.
+
+The full assistant stack is initialized lazily to avoid delaying the MCP connection handshake.
+
+---
+
+## Guardrails
+
+The MCP interface includes basic safety and reliability controls.
+
+Implemented safeguards include:
+
+- empty-query validation
+- structured error responses
+- sanitized client-facing errors
+- server-side exception logging
+- source-grounded responses
+- separation of external error messages from internal stack traces
+
+---
+
+## Corpus
+
+The current corpus contains multiple ML artifact types centered on synthetic-image detection.
+
+Examples include:
+
+- research papers
+- repository READMEs
+- model cards
+- dataset cards
+- dataset metadata
+- reproducibility reports
+- evaluation reports
+- experiment reports
+- deployment notes
+- postmortems
+- project briefs
+
+The corpus currently represents **14 ML projects** and is used to evaluate cross-project retrieval and knowledge reuse.
+
+Example projects include:
+
+- GenImage
+- SynthBuster
+- DIRE
+- MaskSim
+- UniversalFakeDetect
+- CNNDetection
+- NYUAD AI Image Detector
+
+---
+
+## Evaluation
+
+The system is evaluated at two levels.
+
+### Agentic Planning Evaluation
+
+A 30-query benchmark evaluates:
+
+- routing accuracy
+- execution-plan accuracy
+- strict full-plan accuracy
+- critic behavior
+- revision success
+- ambiguous multi-reference queries
+
+Current results:
+
+| Metric | Result |
+| --- | ---: |
+| Final routing accuracy | 96.67% |
+| Final execution-plan accuracy | 93.33% |
+| Final full-plan accuracy | 76.67% |
+| Revision success rate | 100% |
+
+### End-to-End Retrieval Evaluation
+
+A separate benchmark evaluates final retrieval and answer behavior.
+
+The current MVP baseline on 10 representative queries is:
+
+| Metric | Result |
+| --- | ---: |
+| Strict end-to-end pass rate | 50.0% |
+| Project retrieval accuracy | 44.44% |
+| Asset-type retrieval accuracy | 60.0% |
+| Required-fact accuracy | 70.0% |
+| Source coverage | 80.0% |
+
+Error analysis indicates that project/entity resolution and project-filter propagation are the main remaining failure modes.
+
+This benchmark is intended as an MVP diagnostic rather than a complete semantic answer-quality evaluation.
+
+---
 
 ## Tech Stack
 
-| Component | Technology | Status |
-| --- | --- | --- |
-| Core implementation | Python | In use |
-| PDF extraction | PyMuPDF | In use |
-| Data validation and schemas | Pydantic | In use |
-| Text embeddings | sentence-transformers | In use |
-| Vector search | Qdrant | In-memory prototype |
-| Testing | pytest | In use |
-| Knowledge graph | Neo4j | Planned |
-| Answer generation and structured extraction | OpenAI API | Planned |
-| Application API | FastAPI | Planned |
-| Tool interface | MCP Python SDK | Planned |
-| Demo interface | Streamlit | Planned |
-| Packaging | Docker | Planned |
+| Component | Technology |
+| --- | --- |
+| Core implementation | Python |
+| Schemas / validation | Pydantic |
+| PDF extraction | PyMuPDF |
+| Embeddings | sentence-transformers |
+| Vector database | Qdrant |
+| Knowledge graph | Neo4j AuraDB |
+| LLM reasoning / generation | OpenAI API |
+| MCP interface | MCP Python SDK |
+| Testing | pytest |
+| Environment configuration | python-dotenv |
+
+---
 
 ## Project Structure
 
 | Path | Purpose |
 | --- | --- |
-| `data/` | Local input data and processing outputs |
-| `docs/` | Project documentation |
-| `notebooks/` | Exploration and experiments |
-| `scripts/` | Workflow scripts |
-| `src/ml_knowledge_hub/` | Application package |
-| `src/ml_knowledge_hub/ingestion/` | Document ingestion components |
-| `src/ml_knowledge_hub/knowledge_graph/` | Knowledge graph module |
+| `data/raw/` | Corpus and asset manifest |
+| `data/qdrant/` | Persistent local vector index |
+| `data/knowledge_graph/` | Knowledge-graph entity data |
+| `data/evaluation/` | Planning and retrieval benchmarks |
+| `scripts/` | Indexing, testing, and evaluation workflows |
+| `src/ml_knowledge_hub/ingestion/` | Document ingestion and parsing |
+| `src/ml_knowledge_hub/registry/` | Asset registry |
+| `src/ml_knowledge_hub/vectorstore/` | Qdrant integration |
+| `src/ml_knowledge_hub/knowledge_graph/` | Neo4j graph services |
+| `src/ml_knowledge_hub/rag/` | Grounded generation |
+| `src/ml_knowledge_hub/query/` | Query routing and planning |
+| `src/ml_knowledge_hub/agents/` | Planner, critic, and revision agents |
+| `src/ml_knowledge_hub/assistant/` | End-to-end assistant orchestration |
+| `src/ml_knowledge_hub/mcp_server/` | MCP interface |
 | `tests/` | Automated tests |
-| `pyproject.toml` | Project configuration and dependencies |
+
+---
 
 ## Setup
 
-From the repository root, create and activate a virtual environment:
+Create and activate a virtual environment:
 
 ```bash
 python -m venv .venv
@@ -139,31 +353,113 @@ Install the project:
 pip install -e .
 ```
 
-Run tests:
+Create a `.env` file containing the required credentials:
+
+```text
+OPENAI_API_KEY=...
+NEO4J_URI=...
+NEO4J_USERNAME=...
+NEO4J_PASSWORD=...
+```
+
+Do not commit `.env`.
+
+---
+
+## Running Tests
 
 ```bash
 pytest
 ```
 
-## Roadmap
+---
 
-- [x] PDF ingestion and text chunking
+## Running the MCP Server
+
+```bash
+python src/ml_knowledge_hub/mcp_server/server.py
+```
+
+The server can be connected to an MCP-compatible client such as MCP Inspector.
+
+---
+
+## Example Queries
+
+```text
+How many projects do we have?
+```
+
+```text
+Which models are used by the NYUAD project?
+```
+
+```text
+What do we know about GenImage as a project?
+```
+
+```text
+What implementation information is available for DIRE?
+```
+
+```text
+Which projects use diffusion-based methods?
+```
+
+---
+
+## Current Status
+
+### Implemented
+
+- [x] Multi-format ML asset registry
+- [x] PDF and text-document ingestion
+- [x] Document chunking
 - [x] Embedding generation
-- [x] Local vector search with in-memory Qdrant
-- [x] Initial semantic retrieval checks on research papers
-- [ ] Basic RAG pipeline with source references
-- [ ] Structured entity and relationship extraction
-- [ ] Knowledge graph construction with Neo4j
-- [ ] Hybrid vector and graph retrieval
-- [ ] MCP server for retrieval and asset lookup
-- [ ] Grounding and insufficient-evidence guardrails
-- [ ] Evaluation of retrieval quality, answer grounding, and vector-only versus hybrid retrieval
-- [ ] Broader project-document corpus and additional ingestion formats
-- [ ] Persistent indexing
-- [ ] Demo interface and API-key-safe deployment
+- [x] Persistent Qdrant indexing
+- [x] Metadata retrieval
+- [x] Semantic search
+- [x] Entity and relationship extraction
+- [x] Neo4j knowledge graph
+- [x] Graph retrieval
+- [x] Hybrid GraphRAG
+- [x] Grounded RAG with source references
+- [x] Planner–critic–revision agent workflow
+- [x] MCP server
+- [x] MCP lazy initialization
+- [x] Input and error guardrails
+- [x] Planning benchmark
+- [x] End-to-end retrieval benchmark
+- [x] Automated tests
 
-The initial MVP targets a two-week development window, with a $0/month infrastructure budget and an LLM development budget of at most $10. The roadmap includes follow-on work beyond that MVP. API keys must remain outside version control and browser-delivered code.
+### Future Work
+
+- [ ] Improve project/entity resolution
+- [ ] Improve project-filter propagation
+- [ ] Add richer answer-grounding evaluation
+- [ ] Add additional enterprise document types
+- [ ] Support external repository and document integrations
+- [ ] Add API and interactive demo interface
+- [ ] Run Qdrant as a standalone service for multi-process access
+- [ ] Containerized deployment
+
+---
+
+## Design Principles
+
+ML Knowledge Hub is designed around several principles:
+
+- **Grounded answers:** generated responses should be supported by retrieved evidence.
+- **Hybrid reasoning:** structured graph relationships and semantic document evidence complement each other.
+- **Reusable services:** MCP exposes existing application services rather than duplicating business logic.
+- **Typed planning:** LLM reasoning produces structured execution plans before deterministic execution.
+- **Evaluation-first development:** planning and retrieval behavior are measured using explicit benchmarks.
+- **Safe integration:** external clients receive controlled error responses rather than internal implementation details.
+
+---
 
 ## License
 
-A project license has not yet been specified. Source documents and external assets remain subject to their respective licenses.
+A project license has not yet been specified.
+
+External papers, repositories, datasets, model cards, and other assets remain subject to their respective licenses and terms of use.
