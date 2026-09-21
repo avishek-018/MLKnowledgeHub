@@ -1,3 +1,4 @@
+
 """JSON-backed asset registry."""
 
 import json

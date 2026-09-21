@@ -45,6 +45,20 @@ registry = AssetRegistry(
 # None means the expensive assistant stack has not been loaded yet.
 # ------------------------------------------------------------------
 _assistant = None
+_query_router = None
+
+
+def get_query_router():
+    """Return a shared router without initializing retrieval services."""
+
+    global _query_router
+
+    if _query_router is None:
+        from ml_knowledge_hub.query.router import QueryRouter
+
+        _query_router = QueryRouter()
+
+    return _query_router
 
 
 def get_assistant():
@@ -108,6 +122,7 @@ def get_assistant():
         rag_generator=rag_generator,
         graph_service=graph_service,
         entity_registry=entity_registry,
+        query_router=get_query_router(),
     )
 
     return _assistant
@@ -159,10 +174,18 @@ def search_knowledge(query: str) -> dict:
 
     try:
         start = time.perf_counter()
-        
-        assistant = get_assistant()
+        clean_query = query.strip()
+        plan = get_query_router().route(clean_query)
 
-        result = assistant.ask(query.strip())
+        if plan.query_type == "conversation":
+            from ml_knowledge_hub.assistant.conversation import (
+                build_conversation_result,
+            )
+
+            result = build_conversation_result(plan.operation)
+        else:
+            assistant = get_assistant()
+            result = assistant.ask(clean_query, plan=plan)
         elapsed = time.perf_counter() - start
         
 
@@ -172,11 +195,15 @@ def search_knowledge(query: str) -> dict:
             "result": result,
         }
 
-    except Exception as exc:
+    except Exception:
+        # Keep the detailed traceback in server logs for debugging,
+        # but do not expose internal implementation details to MCP clients.
+        logger.exception("search_knowledge failed")
+
         return {
             "status": "error",
-            "error_type": type(exc).__name__,
-            "message": str(exc),
+            "error_type": "internal_error",
+            "message": "The knowledge search could not be completed.",
         }
 
 

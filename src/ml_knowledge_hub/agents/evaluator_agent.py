@@ -78,6 +78,10 @@ SYSTEM CAPABILITIES
 
 RETRIEVAL MODES
 
+conversation:
+Use for greetings, help, acknowledgements, farewells, and requests
+outside the scope of knowledge stored in ML Knowledge Hub.
+
 metadata:
 Use authoritative catalog metadata for counts, inventories,
 lists, and catalog-level information.
@@ -97,6 +101,13 @@ questions.
 
 
 AVAILABLE OPERATIONS
+
+Conversation:
+- greeting
+- help
+- acknowledgement
+- goodbye
+- out_of_scope
 
 Metadata:
 - count_projects
@@ -171,6 +182,18 @@ EVALUATION PRINCIPLES
 
 1. Evaluate the plan based on the user's information need,
    not exact keywords.
+
+1a. Accept a conversation plan when there is no knowledge-retrieval
+    need or the request is unrelated to registered ML knowledge.
+
+1b. Reject semantic retrieval used merely as a fallback for an
+    unrelated request; prefer conversation/out_of_scope.
+
+1c. When a greeting is combined with a valid knowledge question,
+    evaluate the knowledge plan rather than routing it as conversation.
+
+1d. Conversation plans must not include an entity mention, entity type,
+    target entity type, or asset filter.
 
 2. Prefer the most precise available system capability that
    can fully answer the question.

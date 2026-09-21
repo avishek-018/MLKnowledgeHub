@@ -1,0 +1,8 @@
+[client]
+showSidebarNavigation = false
+
+[server]
+# Transformers exposes many optional lazy modules. Streamlit's default source
+# watcher probes them all and produces noisy errors for optional dependencies
+# such as torchvision. The demo does not need hot reload in production use.
+fileWatcherType = "none"

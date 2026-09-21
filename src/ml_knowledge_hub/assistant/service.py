@@ -1,7 +1,11 @@
 """Assistant service orchestration."""
 
 from ml_knowledge_hub.query.router import (
+    QueryPlan,
     QueryRouter,
+)
+from ml_knowledge_hub.assistant.conversation import (
+    build_conversation_result,
 )
 from ml_knowledge_hub.knowledge_graph.extraction_schema import (
     EntityType,
@@ -37,13 +41,18 @@ class KnowledgeAssistant:
             else QueryRouter()
         )
 
-    def ask(self, query: str) -> dict:
+    def ask(
+        self,
+        query: str,
+        plan: QueryPlan | None = None,
+    ) -> dict:
         # --------------------------------------------------
         # Build a structured execution plan for this question.
         # --------------------------------------------------
-        plan = self.query_router.route(
-            query
-        )
+        plan = plan or self.query_router.route(query)
+
+        if plan.query_type == "conversation":
+            return build_conversation_result(plan.operation)
 
         # --------------------------------------------------
         # Graph query path
@@ -78,6 +87,10 @@ class KnowledgeAssistant:
                 query=plan.query,
                 asset_types=plan.asset_types,
             )
+
+        raise ValueError(
+            f"Unsupported query type: {plan.query_type}"
+        )
 
     def _handle_metadata(self, plan) -> dict:
         if plan.operation == "count_projects":

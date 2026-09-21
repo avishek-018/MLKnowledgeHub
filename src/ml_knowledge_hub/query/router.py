@@ -6,9 +6,13 @@ from typing import Literal
 from ml_knowledge_hub.agents.orchestrator import (
     AgentOrchestrator,
 )
+from ml_knowledge_hub.assistant.conversation import (
+    classify_local_conversation,
+)
 
 
 QueryType = Literal[
+    "conversation",
     "metadata",
     "filtered_semantic",
     "semantic",
@@ -69,11 +73,9 @@ class QueryRouter:
         # Dependency injection allows us to substitute a fake
         # orchestrator during unit tests.
         # --------------------------------------------------
-        self.orchestrator = (
-            orchestrator
-            if orchestrator is not None
-            else AgentOrchestrator()
-        )
+        # Keep the LLM-backed orchestration lazy so standalone greetings and
+        # acknowledgements do not even construct API clients.
+        self.orchestrator = orchestrator
 
     def route(
         self,
@@ -83,9 +85,21 @@ class QueryRouter:
         Produce the final executable query plan.
         """
 
-        # --------------------------------------------------
-        # Run the complete agentic planning workflow.
-        # --------------------------------------------------
+        # Handle exact, standalone social messages locally. This avoids an LLM
+        # call and ensures mixed prompts still reach the knowledge planner.
+        local_operation = classify_local_conversation(query)
+        if local_operation is not None:
+            return QueryPlan(
+                query_type="conversation",
+                query=query,
+                operation=local_operation,
+            )
+
+        # Run the complete agentic planning workflow for knowledge questions
+        # and requests that need an explicit scope decision.
+        if self.orchestrator is None:
+            self.orchestrator = AgentOrchestrator()
+
         orchestration_result = self.orchestrator.create_plan(
             query=query
         )

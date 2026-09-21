@@ -13,6 +13,7 @@ The system combines:
 - grounded answer generation with source references
 - agentic query planning with planner–critic–revision orchestration
 - MCP access for external AI clients
+- a Streamlit UI for interactive exploration and portfolio demos
 
 ---
 
@@ -334,6 +335,7 @@ This benchmark is intended as an MVP diagnostic rather than a complete semantic 
 | `src/ml_knowledge_hub/agents/` | Planner, critic, and revision agents |
 | `src/ml_knowledge_hub/assistant/` | End-to-end assistant orchestration |
 | `src/ml_knowledge_hub/mcp_server/` | MCP interface |
+| `src/ml_knowledge_hub/ui/` | Streamlit user interface |
 | `tests/` | Automated tests |
 
 ---
@@ -381,6 +383,34 @@ python src/ml_knowledge_hub/mcp_server/server.py
 ```
 
 The server can be connected to an MCP-compatible client such as MCP Inspector.
+
+## Running the Streamlit UI
+
+Launch the interactive knowledge hub from the repository root:
+
+```bash
+streamlit run src/ml_knowledge_hub/ui/app.py
+```
+
+The UI includes Ask Knowledge Hub, Projects, Knowledge Graph, and Evaluation
+pages. Heavy assistant resources are cached across Streamlit reruns. Because the
+local persistent Qdrant store cannot be opened safely by multiple processes,
+stop other assistant or MCP processes that use the same store before launching
+the UI.
+
+Standalone greetings, help requests, acknowledgements, and farewells are
+answered locally without opening Qdrant or calling the LLM planner. Other
+requests outside the registered ML knowledge scope are explicitly redirected
+instead of being forced through semantic retrieval.
+
+The Ask page uses a chat interface with Enter-to-send input, scrollable
+per-session conversation history, suggestion prompts, and source or graph
+details attached to each assistant response. Conversation history is temporary
+and is cleared when the browser session ends or the user starts a new chat.
+
+If the UI reports that the Qdrant index is already in use, stop the process that
+is running `src/ml_knowledge_hub/mcp_server/server.py` before retrying. The
+embedded Qdrant client permits only one process to open `data/qdrant` at a time.
 
 ---
 

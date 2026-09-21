@@ -105,3 +105,48 @@ def test_semantic_plan_preserves_asset_types():
 
     assert plan.query_type == "semantic"
     assert plan.asset_types == ["model_card"]
+
+
+class FailingOrchestrator:
+    def create_plan(self, query: str) -> dict:
+        raise AssertionError("The LLM planner should not run for local conversation")
+
+
+def test_standalone_greeting_bypasses_agentic_planner():
+    router = QueryRouter(orchestrator=FailingOrchestrator())
+
+    plan = router.route("Hello!")
+
+    assert plan.query_type == "conversation"
+    assert plan.operation == "greeting"
+
+
+def test_mixed_greeting_and_knowledge_query_uses_planner():
+    router = make_router(
+        QueryPlanLLM(
+            query_type=PlannedQueryType.GRAPH,
+            operation=PlannedOperation.PROJECT_MODELS,
+            entity_mention="NYUAD",
+            entity_type="project",
+            target_entity_type="model",
+        )
+    )
+
+    plan = router.route("Hi, which models are used by NYUAD?")
+
+    assert plan.query_type == "graph"
+    assert plan.operation == "project_models"
+
+
+def test_agentic_out_of_scope_plan_is_preserved():
+    router = make_router(
+        QueryPlanLLM(
+            query_type=PlannedQueryType.CONVERSATION,
+            operation=PlannedOperation.OUT_OF_SCOPE,
+        )
+    )
+
+    plan = router.route("What is the weather today?")
+
+    assert plan.query_type == "conversation"
+    assert plan.operation == "out_of_scope"

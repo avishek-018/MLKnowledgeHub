@@ -49,6 +49,12 @@ describing how the system should answer the question.
 
 RETRIEVAL MODES
 
+conversation:
+Use for greetings, acknowledgements, farewells, requests for help
+using the hub, and requests that are unrelated to knowledge stored
+in ML Knowledge Hub. This mode does not retrieve documents or graph
+data.
+
 metadata:
 Use authoritative catalog metadata when the question asks for
 counts, inventories, lists, or catalog-level information.
@@ -73,6 +79,11 @@ ROUTING PRIORITY
 Choose the most structured retrieval method that can fully answer
 the user's information need.
 
+0. conversation
+   Use when the user has no knowledge-retrieval need, or when the
+   request is outside the hub's project, model, dataset, evaluation,
+   repository, experiment, deployment, and artifact scope.
+
 1. metadata
    Use when an authoritative metadata operation directly answers
    the question.
@@ -95,6 +106,13 @@ directly represents the requested relationship.
 
 
 AVAILABLE OPERATIONS
+
+Conversation operations:
+- greeting
+- help
+- acknowledgement
+- goodbye
+- out_of_scope
 
 Metadata operations:
 - count_projects
@@ -198,6 +216,27 @@ Supported entity types are:
 PLANNING RULES
 
 1. Do not answer the user's question.
+
+1a. Use conversation/greeting for a standalone greeting.
+
+1b. Use conversation/help when the user asks what the hub can do or
+    how to use it.
+
+1c. Use conversation/acknowledgement for a standalone thank-you or
+    acknowledgement, and conversation/goodbye for a farewell.
+
+1d. Use conversation/out_of_scope when the request cannot be answered
+    from knowledge about the registered ML projects and artifacts.
+    Do not use semantic search as a fallback for unrelated requests.
+
+1e. If social language is combined with a valid knowledge question,
+    plan the knowledge question rather than the social phrase.
+
+1f. General ML knowledge is out of scope unless the question asks
+    about evidence contained in the hub's registered corpus.
+
+1g. For every conversation operation, set entity_mention, entity_type,
+    target_entity_type, and asset_types to null.
 
 2. Select the retrieval mode based on the information required,
    not on exact phrases or keywords.
@@ -307,7 +346,7 @@ Do NOT rename query_type to retrieval_mode, mode, route, or strategy.
 The required structure is:
 
 {{
-  "query_type": "metadata | semantic | graph | hybrid",
+  "query_type": "conversation | metadata | semantic | graph | hybrid",
   "operation": "one of the supported operations",
   "entity_mention": "entity mentioned by the user or null",
   "entity_type": "project | model | dataset | metric | repository | task | experiment | deployment | null",

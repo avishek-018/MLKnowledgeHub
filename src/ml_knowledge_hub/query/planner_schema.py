@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 
 class PlannedQueryType(str, Enum):
+    CONVERSATION = "conversation"
     METADATA = "metadata"
     SEMANTIC = "semantic"
     GRAPH = "graph"
@@ -13,6 +14,13 @@ class PlannedQueryType(str, Enum):
 
 
 class PlannedOperation(str, Enum):
+    # Conversation / scope handling
+    GREETING = "greeting"
+    HELP = "help"
+    ACKNOWLEDGEMENT = "acknowledgement"
+    GOODBYE = "goodbye"
+    OUT_OF_SCOPE = "out_of_scope"
+
     # Metadata
     COUNT_PROJECTS = "count_projects"
     LIST_PROJECTS = "list_projects"

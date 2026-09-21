@@ -98,6 +98,10 @@ SYSTEM CAPABILITIES
 
 RETRIEVAL MODES
 
+conversation:
+Use for greetings, help, acknowledgements, farewells, and requests
+outside the scope of knowledge stored in ML Knowledge Hub.
+
 metadata:
 Use authoritative catalog metadata for counts, inventories,
 lists, and catalog-level information.
@@ -116,6 +120,13 @@ evidence discovery, and broad searches.
 
 
 AVAILABLE OPERATIONS
+
+Conversation:
+- greeting
+- help
+- acknowledgement
+- goodbye
+- out_of_scope
 
 Metadata:
 - count_projects
@@ -205,6 +216,15 @@ REVISION RULES
 
 1. If evaluation.valid is true, normally preserve the original plan.
 
+1a. Use conversation/out_of_scope rather than semantic search when
+    the user's request is unrelated to registered ML knowledge.
+
+1b. Preserve a valid knowledge route when social language is combined
+    with a real knowledge question.
+
+1c. Conversation plans must set entity_mention, entity_type,
+    target_entity_type, and asset_types to null.
+
 2. If evaluation.valid is false, revise the plan where the
    evaluator identified a meaningful problem.
 
@@ -242,7 +262,7 @@ The JSON keys MUST be exactly:
 The required structure is:
 
 {{
-  "query_type": "metadata | semantic | graph | hybrid",
+  "query_type": "conversation | metadata | semantic | graph | hybrid",
   "operation": "one of the supported operations",
   "entity_mention": "entity mentioned by the user or null",
   "entity_type": "project | model | dataset | metric | repository | task | experiment | deployment | null",
