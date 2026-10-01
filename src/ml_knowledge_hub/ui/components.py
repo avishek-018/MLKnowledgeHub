@@ -226,6 +226,8 @@ def render_chat_result(result: Any) -> None:
             "Retrieved sources": len(sources),
             "Graph context": "Available" if graph_context else "Not included",
         }
+        if result.get("standalone_query"):
+            details["Interpreted as"] = result["standalone_query"]
         if result.get("filter") is not None:
             details["Filter"] = result["filter"]
         st.json(to_jsonable(details))

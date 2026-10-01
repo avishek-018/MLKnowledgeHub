@@ -15,7 +15,10 @@ import streamlit as st
 from dotenv import load_dotenv
 
 from ml_knowledge_hub.registry.service import AssetRegistry
-from ml_knowledge_hub.assistant.conversation import build_conversation_result
+from ml_knowledge_hub.assistant.conversation import (
+    build_conversation_result,
+    classify_local_conversation,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
@@ -106,13 +109,38 @@ def get_assistant():
     )
 
 
-def ask_knowledge(query: str) -> dict[str, Any]:
-    """Plan first, then initialize retrieval services only when required."""
+@st.cache_resource(show_spinner=False)
+def get_contextualizer():
+    """Return the follow-up question rewriter."""
 
-    plan = get_query_router().route(query)
+    from ml_knowledge_hub.assistant.contextualizer import QueryContextualizer
+
+    return QueryContextualizer()
+
+
+def ask_knowledge(
+    query: str,
+    history: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """Plan first, then initialize retrieval services only when required.
+
+    With chat history, follow-up questions are rewritten into standalone
+    questions before planning so references like "it" resolve correctly.
+    """
+
+    standalone_query = query
+    if history and classify_local_conversation(query) is None:
+        standalone_query = get_contextualizer().rewrite(query, history)
+
+    plan = get_query_router().route(standalone_query)
     if plan.query_type == "conversation":
-        return build_conversation_result(plan.operation)
-    return get_assistant().ask(query, plan=plan)
+        result = build_conversation_result(plan.operation)
+    else:
+        result = get_assistant().ask(standalone_query, plan=plan)
+
+    if standalone_query != query:
+        result["standalone_query"] = standalone_query
+    return result
 
 
 @st.cache_data(show_spinner=False)

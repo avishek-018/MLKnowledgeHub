@@ -67,6 +67,7 @@ def _render_message(message: dict[str, Any]) -> None:
 
 
 def _answer_prompt(prompt: str, history) -> None:
+    previous_messages = list(st.session_state.chat_messages)
     user_message = {"role": "user", "content": prompt}
     st.session_state.chat_messages.append(user_message)
     with history:
@@ -78,7 +79,7 @@ def _answer_prompt(prompt: str, history) -> None:
                 ":shimmer[Understanding your question]",
                 type="compact",
             ) as status:
-                result = ask_knowledge(prompt)
+                result = ask_knowledge(prompt, history=previous_messages)
                 status.update(
                     label=(
                         "Response ready"
