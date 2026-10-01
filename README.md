@@ -2,6 +2,12 @@
 
 **An agentic hybrid GraphRAG platform for discovering, understanding, and reusing machine-learning knowledge across projects.**
 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://mlknowledge.streamlit.app/)
+
+**🚀 Try the live demo: [mlknowledge.streamlit.app](https://mlknowledge.streamlit.app/)**
+
+Ask questions such as *"Which models does GenImage use?"*, then follow up with *"What about DIRE?"* or *"Where is its implementation?"*. The app runs on a free tier, so if it has been idle it may take a minute to wake up.
+
 ML Knowledge Hub is a knowledge-management system for ML teams. It helps engineers, data scientists, and applied scientists discover information across project documentation, experiment reports, model cards, dataset descriptions, repositories, research papers, and other technical artifacts.
 
 The system combines:
