@@ -12,6 +12,7 @@ The system combines:
 - hybrid GraphRAG
 - grounded answer generation with source references
 - agentic query planning with planner–critic–revision orchestration
+- multi-turn conversation with follow-up question rewriting
 - MCP access for external AI clients
 - a Streamlit UI for interactive exploration and portfolio demos
 
@@ -80,7 +81,8 @@ flowchart TD
     B --> F[Entity and Relationship Extraction]
     F --> G[Neo4j Knowledge Graph]
 
-    Q[User Query] --> P[Planner Agent]
+    Q[User Query + Chat History] --> CX[Query Contextualizer]
+    CX -->|Standalone question| P[Planner Agent]
     P --> C1[Evaluator / Critic Agent]
     C1 -->|Valid| R[Query Router]
     C1 -->|Needs Revision| V[Revision Agent]
@@ -105,6 +107,32 @@ flowchart TD
 ---
 
 ## Core Capabilities
+
+### Multi-Turn Conversation
+
+The Ask page supports follow-up questions. Before planning, a query
+contextualizer uses the recent chat history to rewrite a follow-up into a
+standalone question, so references such as "it" or "what about DIRE?" resolve
+to the right project or model.
+
+| User message | Interpreted as |
+| --- | --- |
+| Which models does GenImage use? | *(unchanged)* |
+| What about DIRE? | Which models does DIRE use? |
+| Where is its implementation? | Where is DIRE's implementation? |
+| How many projects do we have? | *(unchanged)* |
+
+Design choices:
+
+- The planner, retrieval, and benchmarks stay single-question; only the
+  contextualizer is conversation-aware.
+- The rewrite is skipped for the first message in a chat and for greetings or
+  acknowledgements, so those cost no extra LLM call.
+- Only the last six messages are used as context.
+- If the rewrite fails, the original message is used so answering never blocks.
+- The rewritten question appears under **Execution details → Interpreted as**.
+
+Implementation: `src/ml_knowledge_hub/assistant/contextualizer.py`.
 
 ### Agentic Query Planning
 
@@ -333,7 +361,7 @@ This benchmark is intended as an MVP diagnostic rather than a complete semantic 
 | `src/ml_knowledge_hub/rag/` | Grounded generation |
 | `src/ml_knowledge_hub/query/` | Query routing and planning |
 | `src/ml_knowledge_hub/agents/` | Planner, critic, and revision agents |
-| `src/ml_knowledge_hub/assistant/` | End-to-end assistant orchestration |
+| `src/ml_knowledge_hub/assistant/` | End-to-end assistant orchestration and follow-up question rewriting |
 | `src/ml_knowledge_hub/mcp_server/` | MCP interface |
 | `src/ml_knowledge_hub/ui/` | Streamlit user interface |
 | `tests/` | Automated tests |
@@ -393,7 +421,8 @@ streamlit run src/ml_knowledge_hub/ui/app.py
 ```
 
 The UI includes Ask Knowledge Hub, Projects, Knowledge Graph, and Evaluation
-pages. Heavy assistant resources are cached across Streamlit reruns. Because the
+pages. Ask Knowledge Hub is a multi-turn chat that understands follow-up
+questions; use **New chat** to start over. Heavy assistant resources are cached across Streamlit reruns. Because the
 local persistent Qdrant store cannot be opened safely by multiple processes,
 stop other assistant or MCP processes that use the same store before launching
 the UI.
