@@ -8,12 +8,13 @@ venv/
 
 # Environment
 .env
-.env.example
+.streamlit/secrets.toml
 
 # Data outputs
+# The raw corpus stays local; the manifest and vector index ship with the app.
 data/raw/*
-data/processed/*
-data/qdrant/
 !data/raw/.gitkeep
+!data/raw/manifest.json
+data/processed/*
 !data/processed/.gitkeep
-
+data/qdrant/.lock

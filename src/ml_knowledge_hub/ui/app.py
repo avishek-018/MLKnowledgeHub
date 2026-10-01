@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import hmac
+import os
+
 import streamlit as st
 
 from ml_knowledge_hub.ui.components import apply_styles
@@ -16,6 +19,38 @@ st.set_page_config(
 )
 
 apply_styles()
+
+
+def _configured_password() -> str | None:
+    """Return APP_PASSWORD from Streamlit secrets or the environment, if set."""
+
+    try:
+        # Reading st.secrets also exports root-level secrets to os.environ,
+        # which the backend services read for OpenAI and Neo4j credentials.
+        password = st.secrets.get("APP_PASSWORD")
+    except Exception:
+        password = None
+    return password or os.getenv("APP_PASSWORD")
+
+
+def _require_password() -> None:
+    """Block the app behind APP_PASSWORD when one is configured."""
+
+    password = _configured_password()
+    if not password or st.session_state.get("authenticated"):
+        return
+
+    st.title("ML Knowledge Hub")
+    entered = st.text_input("Password", type="password")
+    if entered and hmac.compare_digest(entered, password):
+        st.session_state["authenticated"] = True
+        st.rerun()
+    elif entered:
+        st.error("Incorrect password.")
+    st.stop()
+
+
+_require_password()
 
 PAGES = {
     "Ask Knowledge Hub": ask.render,

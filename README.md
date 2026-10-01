@@ -414,6 +414,20 @@ embedded Qdrant client permits only one process to open `data/qdrant` at a time.
 
 ---
 
+
+## Deploying to Streamlit Community Cloud
+
+1. Push the repository to GitHub. `data/raw/manifest.json` and the `data/qdrant/`
+   vector index are committed so the app works without re-indexing.
+2. On [share.streamlit.io](https://share.streamlit.io), create an app with main
+   file `src/ml_knowledge_hub/ui/app.py` and Python 3.11+.
+3. In **Advanced settings → Secrets**, paste the keys from
+   `.streamlit/secrets.toml.example`. Set `APP_PASSWORD` to keep the public URL
+   from spending your OpenAI credits.
+
+`requirements.txt` installs the CPU-only torch build and the package in editable
+mode. Set a monthly spending limit on the OpenAI key used for the deployment.
+
 ## Example Queries
 
 ```text

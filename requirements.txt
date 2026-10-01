@@ -1,0 +1,6 @@
+# Used by Streamlit Community Cloud. Runtime dependencies live in pyproject.toml.
+# Install the CPU-only torch build; the default Linux wheel pulls ~2 GB of CUDA libraries.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+# Editable install keeps the package at src/, which the UI uses to locate data/.
+-e .
