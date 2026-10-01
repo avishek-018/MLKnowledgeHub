@@ -7,6 +7,7 @@ answer generation remain in the existing backend services.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -21,6 +22,26 @@ PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DATA_DIR = PROJECT_ROOT / "data"
 
 load_dotenv(PROJECT_ROOT / ".env")
+
+
+def _export_streamlit_secrets() -> None:
+    """Expose root-level Streamlit secrets as environment variables.
+
+    Backend services read credentials with os.getenv, so hosted deployments
+    that configure Streamlit secrets instead of a .env file need this bridge.
+    Values already set in the environment take precedence.
+    """
+
+    try:
+        secrets = dict(st.secrets)
+    except Exception:
+        return
+    for key, value in secrets.items():
+        if isinstance(value, (str, int, float, bool)):
+            os.environ.setdefault(key, str(value))
+
+
+_export_streamlit_secrets()
 
 
 @st.cache_resource(show_spinner=False)
