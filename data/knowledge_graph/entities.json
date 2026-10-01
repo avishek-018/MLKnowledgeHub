@@ -979,7 +979,7 @@
       "properties": {}
     },
     {
-      "entity_id": "synthbuster",
+      "entity_id": "dataset__synthbuster",
       "name": "Synthbuster",
       "entity_type": "dataset",
       "aliases": [],
@@ -995,7 +995,7 @@
       "properties": {}
     },
     {
-      "entity_id": "project__synthbuster",
+      "entity_id": "synthbuster",
       "name": "Synthbuster",
       "entity_type": "project",
       "aliases": [],

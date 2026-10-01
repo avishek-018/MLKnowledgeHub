@@ -241,6 +241,48 @@ class Neo4jStore:
             ]
 
 
+    def get_project_relationships(
+        self,
+        project_id: str,
+    ) -> list[dict] | None:
+        """
+        Return every entity directly connected to a project.
+
+        Returns None when the project node does not exist,
+        and an empty list when it exists without relationships.
+        """
+
+        query = """
+        MATCH (p:Project {entity_id: $project_id})
+        OPTIONAL MATCH (p)-[r]-(x)
+
+        RETURN
+            type(r) AS relationship,
+            labels(x)[0] AS entity_type,
+            x.entity_id AS entity_id,
+            x.name AS name
+
+        ORDER BY relationship, name
+        """
+
+        with self.driver.session() as session:
+            records = [
+                record.data()
+                for record in session.run(
+                    query,
+                    project_id=project_id,
+                )
+            ]
+
+        if not records:
+            return None
+
+        return [
+            record
+            for record in records
+            if record["relationship"] is not None
+        ]
+
     def get_projects_for_model(
         self,
         model_id: str,

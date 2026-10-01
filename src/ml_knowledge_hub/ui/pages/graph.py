@@ -46,7 +46,8 @@ def render() -> None:
         try:
             with st.spinner("Querying the knowledge graph…"):
                 service = get_graph_service()
-                models = service.get_project_models(selected)
+                relationships = service.get_project_relationships(selected)
+                models = service.get_project_models(selected) if relationships else []
                 details = []
                 for model in models:
                     model_id = _model_id(model)
@@ -59,6 +60,7 @@ def render() -> None:
                     )
             st.session_state.graph_result = {
                 "project_id": selected,
+                "relationships": relationships,
                 "details": details,
             }
             st.session_state.graph_error = None
@@ -77,10 +79,31 @@ def render() -> None:
         return
 
     details = result.get("details", [])
+    relationships = result.get("relationships")
     st.subheader(selected.replace("_", " ").title())
+    if relationships is None:
+        st.info(
+            "This project has not been added to the knowledge graph yet. "
+            "Its documents are still searchable from Ask Knowledge Hub."
+        )
+        return
+
     st.caption(f"{len(details)} connected model{'s' if len(details) != 1 else ''}")
     if not details:
-        st.info("No model relationships were found for this project.")
+        if relationships:
+            st.info("No models are linked to this project. Other graph relationships:")
+            render_structured(
+                [
+                    {
+                        "relationship": item["relationship"],
+                        "type": item["entity_type"],
+                        "name": item["name"],
+                    }
+                    for item in relationships
+                ]
+            )
+        else:
+            st.info("No relationships were found for this project.")
         return
 
     for detail in details:

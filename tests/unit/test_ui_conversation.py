@@ -14,8 +14,15 @@ APP_PATH = (
 )
 
 
+def _start_app() -> AppTest:
+    # Skip the optional APP_PASSWORD gate a local secrets.toml may enable.
+    app = AppTest.from_file(str(APP_PATH), default_timeout=10)
+    app.session_state["authenticated"] = True
+    return app.run()
+
+
 def test_greeting_renders_without_retrieval_panels():
-    app = AppTest.from_file(str(APP_PATH), default_timeout=10).run()
+    app = _start_app()
 
     app.chat_input(key="chat_prompt").set_value("Hello!").run()
 
@@ -33,7 +40,7 @@ def test_greeting_renders_without_retrieval_panels():
 
 
 def test_chat_history_persists_across_multiple_messages():
-    app = AppTest.from_file(str(APP_PATH), default_timeout=10).run()
+    app = _start_app()
 
     app.chat_input(key="chat_prompt").set_value("Hello!").run()
     app.chat_input(key="chat_prompt").set_value("Thank you").run()
@@ -46,7 +53,7 @@ def test_chat_history_persists_across_multiple_messages():
 
 
 def test_clear_button_starts_a_new_conversation():
-    app = AppTest.from_file(str(APP_PATH), default_timeout=10).run()
+    app = _start_app()
     app.chat_input(key="chat_prompt").set_value("Hello!").run()
 
     app.button(key="clear_chat").click().run()

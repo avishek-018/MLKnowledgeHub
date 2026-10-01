@@ -9,7 +9,9 @@ from ml_knowledge_hub.ui.services import load_evaluation_results
 
 
 def _percent(value) -> str:
-    return "—" if value is None else f"{float(value):.2f}%"
+    if value is None:
+        return "—"
+    return f"{float(value):.1f}".removesuffix(".0") + "%"
 
 
 def render() -> None:
@@ -30,7 +32,8 @@ def render() -> None:
 
     st.subheader("Agentic planning")
     st.caption(f"{planning_summary.get('total_queries', 0)} benchmark queries")
-    columns = st.columns(4)
+    # Two rows of two keep values readable on narrow screens and beside the sidebar.
+    columns = st.columns(2) + st.columns(2)
     metrics = [
         ("Routing accuracy", "final_routing_accuracy"),
         ("Execution-plan accuracy", "final_execution_plan_accuracy"),

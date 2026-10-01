@@ -70,6 +70,5 @@ with st.sidebar:
     st.caption("◦ Neo4j knowledge graph")
     st.caption("◦ OpenAI reasoning and generation")
     st.caption("◦ MCP interface")
-    st.info("Run only one local process against the persistent Qdrant store.")
 
 PAGES[selected_page]()

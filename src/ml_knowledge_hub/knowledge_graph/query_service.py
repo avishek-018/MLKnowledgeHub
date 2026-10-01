@@ -41,6 +41,19 @@ class GraphQueryService:
             project_id
         )
 
+    def get_project_relationships(
+        self,
+        project_id: str,
+    ) -> list[dict] | None:
+        """
+        Return all entities connected to a project, or None
+        when the project is not in the graph.
+        """
+
+        return self.store.get_project_relationships(
+            project_id
+        )
+
     def get_model_datasets(
         self,
         model_id: str,
